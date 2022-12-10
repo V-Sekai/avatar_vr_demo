@@ -1,0 +1,44 @@
+[gd_scene load_steps=8 format=3 uid="uid://dqhmviole3j0p"]
+
+[ext_resource type="PackedScene" uid="uid://b50wmvhyqi41l" path="res://avatar_vr_demo/models/geometry.tscn" id="1_7yvbg"]
+[ext_resource type="PackedScene" uid="uid://doafhtfvstuff" path="res://avatar_vr_demo/core/player_controller.tscn" id="1_jwf8q"]
+[ext_resource type="Environment" uid="uid://y18dbple6b2d" path="res://env.tres" id="2_15j3v"]
+[ext_resource type="PackedScene" uid="uid://cmx3ucbbmfhst" path="res://avatar_vr_demo/core/mirror.tscn" id="4_b1ske"]
+[ext_resource type="Shader" path="res://avatar_vr_demo/core/mirror.gdshader" id="5_hbnke"]
+[ext_resource type="PackedScene" uid="uid://dgf4u5ip2bmdc" path="res://avatar_vr_demo/models/collision_box.tscn" id="6_h7xe4"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dixa5"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("5_hbnke")
+
+[node name="GameMap" type="Node3D"]
+
+[node name="Geometry" parent="." instance=ExtResource("1_7yvbg")]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_15j3v")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 0, 0)
+shadow_enabled = true
+directional_shadow_blend_splits = true
+
+[node name="PlayerController" parent="." instance=ExtResource("1_jwf8q")]
+
+[node name="Mirror" parent="." node_paths=PackedStringArray("origin") instance=ExtResource("4_b1ske")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -1)
+surface_material_override/0 = SubResource("ShaderMaterial_dixa5")
+origin = NodePath("../PlayerController/PositionInterp/RotationInterp/XROrigin3D")
+
+[node name="CollisionBox" parent="." instance=ExtResource("6_h7xe4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
+
+[node name="CollisionBox2" parent="." instance=ExtResource("6_h7xe4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -2.23517e-08)
+
+[node name="CollisionBox3" parent="." instance=ExtResource("6_h7xe4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.47035e-08, 0, -1)
+
+[editable path="PlayerController"]
+[editable path="PlayerController/PositionInterp/RotationInterp/XROrigin3D/XRCamera3D/godot_head"]

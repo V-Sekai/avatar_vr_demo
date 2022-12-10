@@ -1,0 +1,119 @@
+[gd_scene load_steps=19 format=3 uid="uid://doafhtfvstuff"]
+
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_controller.gd" id="1_u1u4j"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_movement_controller.gd" id="3_0hr76"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_movement/player_movement_turn.gd" id="4_f2jrw"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_movement/player_movement_head_offset.gd" id="4_icgjc"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_movement/player_movement_jump.gd" id="6_o270u"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_movement/player_movement_direct.gd" id="6_oywd3"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/interpolate_origin_to_zero_node_3d.gd" id="7_ud166"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/interpolate_angle_to_zero_anchored_node_3d.gd" id="8_qdlsx"]
+[ext_resource type="PackedScene" uid="uid://ftfgiu7f6lwh" path="res://avatar_vr_demo/models/godot_head.gltf" id="9_8t2ar"]
+[ext_resource type="PackedScene" uid="uid://dcetw2k3x2jg5" path="res://avatar_vr_demo/core/left_hand.tscn" id="10_1mv4d"]
+[ext_resource type="Material" uid="uid://c1bt71pgxtpc6" path="res://addons/godot-xr-tools/hands/materials/labglove.material" id="10_8pyj7"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_movement/xr_controller/xr_controller_movement_direct.gd" id="10_yduvm"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_movement/xr_controller/xr_controller_movement_jump.gd" id="11_gdnbu"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_movement/xr_controller/xr_controller_movement_turn.gd" id="13_oe2lm"]
+[ext_resource type="PackedScene" uid="uid://dg4bbgwi5omep" path="res://avatar_vr_demo/core/right_hand.tscn" id="14_3v4jy"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3qrpw"]
+radius = 0.1
+height = 1.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yo1rx"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_f8anq"]
+radius = 0.1
+height = 0.2
+
+[node name="PlayerController" type="CharacterBody3D"]
+script = ExtResource("1_u1u4j")
+
+[node name="PlayerMovementController" type="Node" parent="." node_paths=PackedStringArray("player_controller", "xr_origin", "xr_camera", "position_interpolation")]
+script = ExtResource("3_0hr76")
+player_controller = NodePath("..")
+xr_origin = NodePath("../PositionInterp/RotationInterp/XROrigin3D")
+xr_camera = NodePath("../PositionInterp/RotationInterp/XROrigin3D/XRCamera3D")
+position_interpolation = NodePath("../PositionInterp")
+
+[node name="PlayerMovementHeadOffset" type="Node" parent="PlayerMovementController" node_paths=PackedStringArray("character_body")]
+script = ExtResource("4_icgjc")
+character_body = NodePath("../..")
+
+[node name="PlayerMovementJump" type="Node" parent="PlayerMovementController"]
+script = ExtResource("6_o270u")
+
+[node name="PlayerMovementTurn" type="Node" parent="PlayerMovementController" node_paths=PackedStringArray("rotation_interpolation")]
+script = ExtResource("4_f2jrw")
+rotation_interpolation = NodePath("../../PositionInterp/RotationInterp")
+
+[node name="PlayerMovementDirect" type="Node" parent="PlayerMovementController"]
+script = ExtResource("6_oywd3")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("CapsuleShape3D_3qrpw")
+
+[node name="PositionInterp" type="Node3D" parent="."]
+script = ExtResource("7_ud166")
+
+[node name="RotationInterp" type="Node3D" parent="PositionInterp" node_paths=PackedStringArray("anchor_node")]
+script = ExtResource("8_qdlsx")
+anchor_node = NodePath("XROrigin3D/XRCamera3D")
+
+[node name="XROrigin3D" type="XROrigin3D" parent="PositionInterp/RotationInterp"]
+current = true
+
+[node name="XRCamera3D" type="XRCamera3D" parent="PositionInterp/RotationInterp/XROrigin3D"]
+cull_mask = 1048567
+
+[node name="godot_head" parent="PositionInterp/RotationInterp/XROrigin3D/XRCamera3D" instance=ExtResource("9_8t2ar")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
+
+[node name="GodotHead" parent="PositionInterp/RotationInterp/XROrigin3D/XRCamera3D/godot_head" index="0"]
+layers = 8
+
+[node name="GodotJaw" parent="PositionInterp/RotationInterp/XROrigin3D/XRCamera3D/godot_head/GodotHead" index="0"]
+layers = 8
+
+[node name="LeftController" type="XRController3D" parent="PositionInterp/RotationInterp/XROrigin3D"]
+tracker = &"left_hand"
+pose = &"aim"
+
+[node name="LeftHand" parent="PositionInterp/RotationInterp/XROrigin3D/LeftController" instance=ExtResource("10_1mv4d")]
+hand_material_override = ExtResource("10_8pyj7")
+
+[node name="XRControllerMovementDirect" type="Node3D" parent="PositionInterp/RotationInterp/XROrigin3D/LeftController" node_paths=PackedStringArray("direct_movement_node", "movement_controller")]
+script = ExtResource("10_yduvm")
+direct_movement_node = NodePath("../../../../../PlayerMovementController/PlayerMovementDirect")
+movement_controller = NodePath("../../../../../PlayerMovementController")
+
+[node name="XRControllerMovementJump" type="Node3D" parent="PositionInterp/RotationInterp/XROrigin3D/LeftController" node_paths=PackedStringArray("jump_node", "movement_controller")]
+script = ExtResource("11_gdnbu")
+jump_node = NodePath("../../../../../PlayerMovementController/PlayerMovementJump")
+movement_controller = NodePath("../../../../../PlayerMovementController")
+
+[node name="RightController" type="XRController3D" parent="PositionInterp/RotationInterp/XROrigin3D"]
+tracker = &"right_hand"
+pose = &"aim"
+
+[node name="RightHand" parent="PositionInterp/RotationInterp/XROrigin3D/RightController" instance=ExtResource("14_3v4jy")]
+hand_material_override = ExtResource("10_8pyj7")
+
+[node name="XRControllerMovementTurn" type="Node3D" parent="PositionInterp/RotationInterp/XROrigin3D/RightController" node_paths=PackedStringArray("turn_movement_node", "movement_controller")]
+script = ExtResource("13_oe2lm")
+turn_movement_node = NodePath("../../../../../PlayerMovementController/PlayerMovementTurn")
+movement_controller = NodePath("../../../../../PlayerMovementController")
+
+[node name="XRControllerMovementJump" type="Node3D" parent="PositionInterp/RotationInterp/XROrigin3D/RightController" node_paths=PackedStringArray("jump_node", "movement_controller")]
+script = ExtResource("11_gdnbu")
+jump_node = NodePath("../../../../../PlayerMovementController/PlayerMovementJump")
+movement_controller = NodePath("../../../../../PlayerMovementController")
+
+[node name="XROriginDebug" type="MeshInstance3D" parent="PositionInterp/RotationInterp/XROrigin3D"]
+visible = false
+material_override = SubResource("StandardMaterial3D_yo1rx")
+mesh = SubResource("SphereMesh_f8anq")
+
+[editable path="PositionInterp/RotationInterp/XROrigin3D/XRCamera3D/godot_head"]
