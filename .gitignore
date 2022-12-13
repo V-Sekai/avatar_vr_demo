@@ -1,2 +1,4 @@
 .godot
 .godot/*
+*.blend1
+avatar_vr_demo/test/*

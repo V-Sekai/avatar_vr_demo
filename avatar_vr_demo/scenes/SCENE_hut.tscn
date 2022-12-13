@@ -1,0 +1,49 @@
+[gd_scene load_steps=7 format=3 uid="uid://o5o67ubkba33"]
+
+[ext_resource type="Environment" uid="uid://cfw4h62tpa2nv" path="res://avatar_vr_demo/scenes/hut_env.tres" id="1_rwmmv"]
+[ext_resource type="PackedScene" uid="uid://doafhtfvstuff" path="res://avatar_vr_demo/core/player_controller.tscn" id="3_6dvvs"]
+[ext_resource type="PackedScene" uid="uid://cmx3ucbbmfhst" path="res://avatar_vr_demo/core/mirror.tscn" id="4_rka68"]
+[ext_resource type="PackedScene" uid="uid://c76ltxt3hfdu4" path="res://avatar_vr_demo/models/cc0_hut.gltf" id="5_d0has"]
+[ext_resource type="Shader" path="res://avatar_vr_demo/core/mirror.gdshader" id="5_sxbms"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kbmmg"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("5_sxbms")
+
+[node name="GameMap" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("1_rwmmv")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 0, 0)
+light_bake_mode = 1
+shadow_enabled = true
+directional_shadow_blend_splits = true
+
+[node name="PlayerController" parent="." instance=ExtResource("3_6dvvs")]
+
+[node name="Mirror" parent="." node_paths=PackedStringArray("origin") instance=ExtResource("4_rka68")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.4, -2.4)
+surface_material_override/0 = SubResource("ShaderMaterial_kbmmg")
+origin = NodePath("../PlayerController/PositionInterp/RotationInterp/XROrigin3D")
+
+[node name="cc0_hut" parent="." instance=ExtResource("5_d0has")]
+
+[node name="OmniLight3D" type="OmniLight3D" parent="cc0_hut/PendantLight" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+distance_fade_enabled = true
+omni_shadow_mode = 0
+
+[node name="ReflectionProbe" type="ReflectionProbe" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+extents = Vector3(5, 3, 3)
+origin_offset = Vector3(0, -1, 0)
+box_projection = true
+enable_shadows = true
+cull_mask = 1
+
+[editable path="PlayerController"]
+[editable path="PlayerController/PositionInterp/RotationInterp/XROrigin3D/XRCamera3D/godot_head"]
+[editable path="cc0_hut"]

@@ -291,7 +291,7 @@ _global_script_class_icons={
 [application]
 
 config/name="AvatarVRDemo"
-run/main_scene="res://avatar_vr_demo/scenes/SCENE_game_map.tscn"
+run/main_scene="res://avatar_vr_demo/scenes/SCENE_hut.tscn"
 config/features=PackedStringArray("4.0")
 config/icon="res://icon.png"
 
