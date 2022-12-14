@@ -10,6 +10,7 @@
 resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("1_5cymf")
+shader_parameter/use_screenspace = false
 
 [node name="Mirror" type="MeshInstance3D" node_paths=PackedStringArray("left_camera", "right_camera", "leftvp", "rightvp")]
 layers = 2
@@ -20,6 +21,7 @@ left_camera = NodePath("LeftViewport/Camera3D")
 right_camera = NodePath("RightViewport/Camera3D")
 leftvp = NodePath("LeftViewport")
 rightvp = NodePath("RightViewport")
+use_screenspace = false
 
 [node name="LeftViewport" type="SubViewport" parent="."]
 size = Vector2i(128, 128)
