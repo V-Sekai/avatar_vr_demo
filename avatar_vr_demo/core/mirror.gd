@@ -1,10 +1,10 @@
 extends MeshInstance3D
 
 @export var left_camera: Camera3D
-@export var right_camera: Camera3D 
+@export var right_camera: Camera3D
 @export var origin: XROrigin3D
-@export var leftvp: SubViewport  
-@export var rightvp: SubViewport 
+@export var leftvp: SubViewport
+@export var rightvp: SubViewport
 
 @export var use_screenspace: bool
 @export var legacy_process_update: bool
@@ -16,10 +16,6 @@ func _ready():
 	m.set("shader_parameter/textureL", leftvp.get_texture())
 	m.set("shader_parameter/textureR", rightvp.get_texture())
 	set_surface_override_material(0, m)
-	
-var nbasis: Basis = Basis()
-var ibasis: Basis = Basis()
-var w_scale: float = 0.0
 
 func _process(delta: float):
 	var m = get_surface_override_material(0)
@@ -36,14 +32,17 @@ func frame_pre_draw():
 
 func update_mirror() -> void:
 	var mirror_size: Vector2 = GameManager.get_mirror_size()
+	# Letterbox along the bigger axis. Not sure why it's tied to the viewport size if in XR
+	var aspect = global_transform.basis.y.length() / global_transform.basis.x.length()
+	if aspect > mirror_size.y / mirror_size.x:
+		mirror_size = Vector2(mirror_size.y / aspect, mirror_size.x)
+	else:
+		mirror_size = Vector2(mirror_size.x, mirror_size.x * aspect)
 	leftvp.size = mirror_size
 	rightvp.size = mirror_size
 	
 	var interface: XRInterface = XRServer.primary_interface
 	if(interface and interface.get_tracking_status() != XRInterface.XR_NOT_TRACKING):
-		nbasis = global_transform.basis.orthonormalized()
-		ibasis = nbasis.inverse()
-		w_scale = global_transform.basis.x.length()
 		render_view(interface, 0, left_camera)
 		render_view(interface, 1, right_camera)
 
@@ -75,10 +74,10 @@ func oblique_near_plane(clip_plane: Plane, matrix: Projection) -> Projection:
 	return matrix
 
 func render_view(p_interface: XRInterface, p_view_index: int, p_cam: Camera3D) -> void:
-	var proj: Projection = p_interface.get_projection_for_view(p_view_index, w_scale, abs(0.1), 10000)
+	var proj: Projection = p_interface.get_projection_for_view(p_view_index, 1.0, abs(0.1), 10000)
 	var tx: Transform3D = p_interface.get_transform_for_view(p_view_index, origin.global_transform)
 
-	var p: Vector3 = ibasis * (tx.origin- global_transform.origin)
+	var p: Vector3 = global_transform.basis.inverse() * (tx.origin- global_transform.origin)
 
 	var portal_relative_matrix: Transform3D
 	# Examples of portals and mirror matrices.
@@ -86,11 +85,11 @@ func render_view(p_interface: XRInterface, p_view_index: int, p_cam: Camera3D) -
 	# portal_relative_matrix = Transform3D(Basis(Vector3(0,1,0),PI/8)) # Test portal with rotation
 
 	# portal_relative_matrix = Transform3D(Basis.FLIP_Z * Basis.FLIP_X, Vector3(0.1,0.05,0.3)) # Flipped mirror with offset
-	# portal_relative_matrix = Transform3D.IDENTITY # Passthrough (No effect)
+	#portal_relative_matrix = Transform3D.IDENTITY # Passthrough (No effect)
 	portal_relative_matrix = Transform3D(Basis.FLIP_Z) # Mirror
 
 	p_cam.global_transform = global_transform * portal_relative_matrix * Transform3D(Basis.IDENTITY, p)
-	p_cam.set_frustum(w_scale, Vector2(-p.x,-p.y), abs(p.z), 10000)
+	p_cam.set_frustum(1.0, Vector2(-p.x,-p.y), abs(p.z), 10000)
 	RenderingServer.camera_set_transform(p_cam.get_camera_rid(), p_cam.global_transform)
 
 	if not use_screenspace:
@@ -99,7 +98,7 @@ func render_view(p_interface: XRInterface, p_view_index: int, p_cam: Camera3D) -
 
 	if use_screenspace:
 		var my_plane: Plane
-		my_plane = Plane(Vector3(0,0,-1),-2.0 * (get_transform().affine_inverse() * tx.origin).z)
-		proj = oblique_near_plane(tx.affine_inverse() * get_transform() * my_plane, proj)
-		proj = proj * Projection(tx.affine_inverse() * get_transform() * portal_relative_matrix.affine_inverse() * get_transform().affine_inverse() * p_cam.global_transform)
+		my_plane = Plane(Vector3(0,0,-1),-2.0 * (global_transform.affine_inverse() * tx.origin).z)
+		proj = oblique_near_plane(tx.affine_inverse() * global_transform * my_plane, proj)
+		proj = proj * Projection(tx.affine_inverse() * global_transform * portal_relative_matrix.affine_inverse() * global_transform.affine_inverse() * p_cam.global_transform)
 		p_cam.set("override_projection", proj)
