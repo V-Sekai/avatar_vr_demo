@@ -7,6 +7,11 @@ var input: Vector2 = Vector2()
 func execute(p_delta: float) -> void:
 	var overall_rotation: float = get_xr_origin().transform.basis.get_euler().y + get_xr_camera().transform.basis.get_euler().y
 	
+	input.y = input.y - Input.get_action_strength("move_forward") + Input.get_action_strength("move_backwards")
+	input.x = input.x - Input.get_action_strength("move_left") + Input.get_action_strength("move_right")
+	
+	input = input.normalized()
+	
 	var rotated_velocity = Vector2(
 	input.y * sin(overall_rotation) + input.x * cos(overall_rotation),
 	input.y * cos(overall_rotation) + input.x * -sin(overall_rotation))

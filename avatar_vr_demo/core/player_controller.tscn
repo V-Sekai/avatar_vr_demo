@@ -66,6 +66,7 @@ anchor_node = NodePath("XROrigin3D/XRCamera3D")
 current = true
 
 [node name="XRCamera3D" type="XRCamera3D" parent="PositionInterp/RotationInterp/XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 cull_mask = 1048567
 
 [node name="godot_head" parent="PositionInterp/RotationInterp/XROrigin3D/XRCamera3D" instance=ExtResource("9_8t2ar")]
@@ -78,6 +79,7 @@ layers = 8
 layers = 8
 
 [node name="LeftController" type="XRController3D" parent="PositionInterp/RotationInterp/XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 1.5, -0.5)
 tracker = &"left_hand"
 pose = &"aim"
 
@@ -95,6 +97,7 @@ jump_node = NodePath("../../../../../PlayerMovementController/PlayerMovementJump
 movement_controller = NodePath("../../../../../PlayerMovementController")
 
 [node name="RightController" type="XRController3D" parent="PositionInterp/RotationInterp/XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 1.5, -0.5)
 tracker = &"right_hand"
 pose = &"aim"
 

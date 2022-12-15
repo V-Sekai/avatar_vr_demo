@@ -1,6 +1,5 @@
 extends Node
 
-var xr_mode_active: bool = false
 var interface : XRInterface = null
 
 var mirror_resolution_scale: float = 1.0
@@ -16,7 +15,5 @@ func _ready() -> void:
 	interface = XRServer.find_interface("OpenXR")
 	if interface and interface.is_initialized():
 		var vp : Viewport = get_viewport()
-		vp.use_xr = true
-		
-		xr_mode_active = true
+		vp.use_xr = ProjectSettings.get_setting("rendering/xr/enabled")
 		
