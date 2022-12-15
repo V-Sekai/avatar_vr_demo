@@ -81,18 +81,16 @@ func render_view(p_interface: XRInterface, p_view_index: int, p_cam: Camera3D) -
 	var p: Vector3 = ibasis * (tx.origin- global_transform.origin)
 
 	var portal_relative_matrix: Transform3D
-	# These are multiplied later by the mirror reflection
-	
-	# portal_relative_matrix = Transform3D(Basis.FLIP_Z * Basis.FLIP_X, Vector3(0.1,0.05,0.3))
-	# portal_relative_matrix = Transform3D(Basis(Vector3(0,1,0), Time.get_ticks_msec() * 0.0001), Vector3(-0.3,0.2,-0.1))
+	# Examples of portals and mirror matrices.
+	# portal_relative_matrix = Transform3D(Basis(Vector3(0,1,0), Time.get_ticks_msec() * 0.0001), Vector3(-0.3,0.2,-0.1)) # Spinning portal
+	# portal_relative_matrix = Transform3D(Basis(Vector3(0,1,0),PI/8)) # Test portal with rotation
 
-	# portal_relative_matrix = Transform3D(Basis.FLIP_Z * Basis.FLIP_X) # Passthrough (No effect)
-	portal_relative_matrix = Transform3D.IDENTITY # Mirror
+	# portal_relative_matrix = Transform3D(Basis.FLIP_Z * Basis.FLIP_X, Vector3(0.1,0.05,0.3)) # Flipped mirror with offset
+	# portal_relative_matrix = Transform3D.IDENTITY # Passthrough (No effect)
+	portal_relative_matrix = Transform3D(Basis.FLIP_Z) # Mirror
 
-	p.z *= -1
-	#w_scale = lerp(p_interface.get_projection_for_view(0, 1.5, abs(p.z), 100).x.x, p_interface.get_projection_for_view(1, 1.5, abs(p.z), 100).x.x, 0.5)
-	p_cam.global_transform = global_transform * portal_relative_matrix * Transform3D(Basis.FLIP_Z * Basis.FLIP_X, p)
-	p_cam.set_frustum(w_scale, Vector2(p.x,-p.y), abs(p.z), 10000)
+	p_cam.global_transform = global_transform * portal_relative_matrix * Transform3D(Basis.IDENTITY, p)
+	p_cam.set_frustum(w_scale, Vector2(-p.x,-p.y), abs(p.z), 10000)
 	RenderingServer.camera_set_transform(p_cam.get_camera_rid(), p_cam.global_transform)
 
 	if not use_screenspace:
@@ -100,34 +98,8 @@ func render_view(p_interface: XRInterface, p_view_index: int, p_cam: Camera3D) -
 		p_cam.set("override_projection", px)
 
 	if use_screenspace:
-
-		#print(Projection.create_frustum_aspect(w_scale, 1.0, Vector2(p.x, -p.y), abs(p.z), 10000))
-		
-		# WORKING pt 1:
-		#print(-(get_transform().affine_inverse() * tx.origin).z)
 		var my_plane: Plane
 		my_plane = Plane(Vector3(0,0,-1),-2.0 * (get_transform().affine_inverse() * tx.origin).z)
-		#print(my_plane)
 		proj = oblique_near_plane(tx.affine_inverse() * get_transform() * my_plane, proj)
-		proj = proj * Projection(tx.affine_inverse() * get_transform()) * Projection(portal_relative_matrix * Transform3D(Basis.FLIP_Z * Basis.FLIP_X)) * Projection(get_transform().affine_inverse() * p_cam.global_transform)
+		proj = proj * Projection(tx.affine_inverse() * get_transform() * portal_relative_matrix.affine_inverse() * get_transform().affine_inverse() * p_cam.global_transform)
 		p_cam.set("override_projection", proj)
-		#print(p_cam.override_projection)
-
-	# pt 2 bad:
-	#proj = proj * Projection(tx.affine_inverse() * get_transform()) * Projection(Transform3D.FLIP_Z * Transform3D.FLIP_X) * Projection(get_transform().affine_inverse() * p_cam.global_transform)
-	#proj = oblique_near_plane(p_cam.global_transform.affine_inverse() * get_transform() * Plane(Vector3(0,0,1),-10), proj)
-	#p_cam.override_projection = proj
-	
-	#pt 3:
-	#var c = oblique_near_plane_z_row_adjust(p_cam.global_transform.affine_inverse() * get_transform() * Plane(Vector3(0,0,-1),0), proj)
-	#proj = proj * Projection(tx.affine_inverse() * get_transform()) * Projection(Transform3D.FLIP_Z * Transform3D.FLIP_X) * Projection(get_transform().affine_inverse() * p_cam.global_transform)
-	#proj.x.z = c.x - proj.x.w
-	#proj.y.z = c.y - proj.y.w
-	#proj.z.z = c.z - proj.z.w
-	#proj.w.z = c.w - proj.w.w
-	#p_cam.override_projection = proj
-
-	#p_cam.global_transform = tx
-	#p_cam.override_projection = proj * Projection(get_transform() * Transform3D.FLIP_Z * get_transform().affine_inverse()) # * tx * p_cam.global_transform)
-	#print(p_cam.global_transform)
-	#print("-------")
