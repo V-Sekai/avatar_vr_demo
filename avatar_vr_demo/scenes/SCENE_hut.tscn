@@ -6,10 +6,12 @@
 [ext_resource type="PackedScene" uid="uid://c76ltxt3hfdu4" path="res://avatar_vr_demo/models/cc0_hut.gltf" id="5_d0has"]
 [ext_resource type="Shader" path="res://avatar_vr_demo/core/mirror.gdshader" id="5_sxbms"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_kbmmg"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ni2nv"]
 resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("5_sxbms")
+shader_parameter/use_screenspace = null
+shader_parameter/albedo_color = null
 
 [node name="GameMap" type="Node3D"]
 
@@ -26,7 +28,8 @@ directional_shadow_blend_splits = true
 
 [node name="Mirror" parent="." node_paths=PackedStringArray("origin") instance=ExtResource("4_rka68")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.4, -2.4)
-surface_material_override/0 = SubResource("ShaderMaterial_kbmmg")
+visible = false
+surface_material_override/0 = SubResource("ShaderMaterial_ni2nv")
 origin = NodePath("../PlayerController/PositionInterp/RotationInterp/XROrigin3D")
 
 [node name="cc0_hut" parent="." instance=ExtResource("5_d0has")]
