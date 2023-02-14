@@ -1,10 +1,18 @@
-[gd_scene load_steps=8 format=3 uid="uid://dqhmviole3j0p"]
+[gd_scene load_steps=10 format=3 uid="uid://dqhmviole3j0p"]
 
 [ext_resource type="PackedScene" uid="uid://b50wmvhyqi41l" path="res://avatar_vr_demo/models/geometry.tscn" id="1_7yvbg"]
 [ext_resource type="PackedScene" uid="uid://doafhtfvstuff" path="res://avatar_vr_demo/core/player_controller.tscn" id="1_jwf8q"]
 [ext_resource type="Environment" uid="uid://y18dbple6b2d" path="res://env.tres" id="2_15j3v"]
 [ext_resource type="PackedScene" uid="uid://cmx3ucbbmfhst" path="res://avatar_vr_demo/core/mirror.tscn" id="4_b1ske"]
+[ext_resource type="Shader" path="res://avatar_vr_demo/core/mirror.gdshader" id="5_8ynlg"]
 [ext_resource type="PackedScene" uid="uid://dgf4u5ip2bmdc" path="res://avatar_vr_demo/models/collision_box.tscn" id="6_h7xe4"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mvvm6"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("5_8ynlg")
+shader_parameter/use_screenspace = false
+shader_parameter/albedo_color = Color(1, 1, 1, 1)
 
 [sub_resource type="TorusMesh" id="TorusMesh_l2lh4"]
 inner_radius = 0.14
@@ -31,6 +39,7 @@ directional_shadow_blend_splits = true
 
 [node name="Mirror" parent="." node_paths=PackedStringArray("origin") instance=ExtResource("4_b1ske")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -2.23603, 1.4, 0.0925313)
+surface_material_override/0 = SubResource("ShaderMaterial_mvvm6")
 origin = NodePath("../PlayerController/PositionInterp/RotationInterp/XROrigin3D")
 
 [node name="CollisionBox" parent="." instance=ExtResource("6_h7xe4")]

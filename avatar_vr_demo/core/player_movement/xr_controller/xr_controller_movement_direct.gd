@@ -10,5 +10,5 @@ func _process(_delta: float) -> void:
 	if !_controller.get_is_active():
 		return
 
-	direct_movement_node.input.y += -_controller.get_axis(input_action).y
-	direct_movement_node.input.x += _controller.get_axis(input_action).x
+	direct_movement_node.input.y += -_controller.get_vector2(input_action).y
+	direct_movement_node.input.x += _controller.get_vector2(input_action).x

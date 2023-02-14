@@ -10,4 +10,4 @@ func _process(_delta: float) -> void:
 	if !_controller.get_is_active():
 		return
 
-	turn_movement_node.input -= _controller.get_axis(input_action).x
+	turn_movement_node.input -= _controller.get_vector2(input_action).x
