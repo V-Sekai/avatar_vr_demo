@@ -1,6 +1,6 @@
+@icon("res://addons/godot-xr-tools/editor/icons/hand.svg")
 class_name XRToolsHand
 extends Node3D
-@icon("res://addons/godot-xr-tools/editor/icons/hand.svg")
 
 
 ## XR Tools Hand Script
@@ -60,8 +60,8 @@ func _process(_delta: float) -> void:
 	# Animate the hand mesh with the controller inputs
 	var controller : XRController3D = get_parent()
 	if controller:
-		var grip = controller.get_value(grip_action)
-		var trigger = controller.get_value(trigger_action)
+		var grip = controller.get_float(grip_action)
+		var trigger = controller.get_float(trigger_action)
 
 		$AnimationTree.set("parameters/Grip/blend_amount", grip)
 		$AnimationTree.set("parameters/Trigger/blend_amount", trigger)

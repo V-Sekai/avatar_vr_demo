@@ -4,7 +4,7 @@ extends "player_movement_provider.gd"
 
 var input: Vector2 = Vector2()
 
-func execute(p_delta: float) -> void:
+func execute(_p_delta: float) -> void:
 	var overall_rotation: float = get_xr_origin().transform.basis.get_euler().y + get_xr_camera().transform.basis.get_euler().y
 	
 	input.y = input.y - Input.get_action_strength("move_forward") + Input.get_action_strength("move_backwards")

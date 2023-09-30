@@ -18,7 +18,7 @@ func get_camera_position() -> Vector2:
 
 	return camera_position_2d
 
-func execute(p_delta: float) -> void:
+func execute(_p_delta: float) -> void:
 	if !character_body or !get_xr_origin() or !get_xr_camera():
 		return
 		

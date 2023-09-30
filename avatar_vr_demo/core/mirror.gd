@@ -17,7 +17,7 @@ func _ready():
 	m.set("shader_parameter/textureR", rightvp.get_texture())
 	set_surface_override_material(0, m)
 
-func _process(delta: float):
+func _process(_delta: float):
 	var m = get_surface_override_material(0)
 	if m != null:
 		m.set("shader_parameter/use_screenspace", use_screenspace)
