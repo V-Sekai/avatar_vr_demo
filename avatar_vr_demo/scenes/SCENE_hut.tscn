@@ -28,7 +28,6 @@ directional_shadow_blend_splits = true
 
 [node name="Mirror" parent="." node_paths=PackedStringArray("origin") instance=ExtResource("4_rka68")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.4, -2.4)
-visible = false
 surface_material_override/0 = SubResource("ShaderMaterial_41xys")
 origin = NodePath("../PlayerController/PositionInterp/RotationInterp/XROrigin3D")
 
