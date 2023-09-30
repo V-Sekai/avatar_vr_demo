@@ -2,9 +2,9 @@
 
 [ext_resource type="Environment" uid="uid://cfw4h62tpa2nv" path="res://avatar_vr_demo/scenes/hut_env.tres" id="1_rwmmv"]
 [ext_resource type="PackedScene" uid="uid://doafhtfvstuff" path="res://avatar_vr_demo/core/player_controller.tscn" id="3_6dvvs"]
-[ext_resource type="PackedScene" uid="uid://cmx3ucbbmfhst" path="res://avatar_vr_demo/core/mirror.tscn" id="4_rka68"]
+[ext_resource type="PackedScene" uid="uid://cmx3ucbbmfhst" path="res://addons/V-Sekai.xr-mirror/mirror.tscn" id="4_rka68"]
 [ext_resource type="PackedScene" uid="uid://c76ltxt3hfdu4" path="res://avatar_vr_demo/models/cc0_hut.gltf" id="5_d0has"]
-[ext_resource type="Shader" path="res://avatar_vr_demo/core/mirror.gdshader" id="5_sxbms"]
+[ext_resource type="Shader" path="res://addons/V-Sekai.xr-mirror/mirror.gdshader" id="5_sxbms"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_41xys"]
 resource_local_to_scene = true

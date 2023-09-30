@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://cmx3ucbbmfhst"]
 
-[ext_resource type="Shader" path="res://avatar_vr_demo/core/mirror.gdshader" id="1_5cymf"]
-[ext_resource type="Script" path="res://avatar_vr_demo/core/mirror.gd" id="2_w4yhn"]
+[ext_resource type="Shader" path="res://addons/V-Sekai.xr-mirror/mirror.gdshader" id="1_5cymf"]
+[ext_resource type="Script" path="res://addons/V-Sekai.xr-mirror/mirror.gd" id="2_w4yhn"]
 [ext_resource type="Environment" uid="uid://y18dbple6b2d" path="res://env.tres" id="3_d6d7e"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_ply7g"]
@@ -10,8 +10,8 @@
 resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("1_5cymf")
-shader_parameter/albedo_color = Color(1, 1, 1, 1)
 shader_parameter/use_screenspace = false
+shader_parameter/albedo_color = Color(1, 1, 1, 1)
 
 [node name="Mirror" type="MeshInstance3D" node_paths=PackedStringArray("left_camera", "right_camera", "leftvp", "rightvp")]
 layers = 2
