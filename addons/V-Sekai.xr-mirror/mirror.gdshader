@@ -20,9 +20,9 @@ uniform sampler2D textureR;
 void fragment() {
 	vec2 uv;
 	if (use_screenspace) {
-		uv = vec2(SCREEN_UV.x, SCREEN_UV.y);
+		uv = vec2(1.0 - SCREEN_UV.x, SCREEN_UV.y);
 	} else {
-		uv = vec2(UV.x,  UV.y);
+		uv = vec2(1.0 - UV.x,  UV.y);
 	}
 	
 	if(VIEW_INDEX==0)

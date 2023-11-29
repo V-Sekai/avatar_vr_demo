@@ -86,10 +86,19 @@ func render_view(p_interface: XRInterface, p_view_index: int, p_cam: Camera3D) -
 
 	# portal_relative_matrix = Transform3D(Basis.FLIP_Z * Basis.FLIP_X, Vector3(0.1,0.05,0.3)) # Flipped mirror with offset
 	#portal_relative_matrix = Transform3D.IDENTITY # Passthrough (No effect)
-	portal_relative_matrix = Transform3D(Basis.FLIP_Z) # Mirror
 
-	p_cam.global_transform = global_transform * portal_relative_matrix * Transform3D(Basis.IDENTITY, p)
-	p_cam.set_frustum(1.0, Vector2(-p.x,-p.y), abs(p.z), 10000)
+	if !use_screenspace:
+		portal_relative_matrix = Transform3D.IDENTITY # Mirror
+
+		p.z *= -1
+		p_cam.global_transform = global_transform * portal_relative_matrix * Transform3D(Basis.FLIP_Z * Basis.FLIP_X, p)
+		p_cam.set_frustum(1.0, Vector2(p.x,-p.y), abs(p.z), 10000)
+	else:
+		portal_relative_matrix = Transform3D(Basis.FLIP_Z) # Mirror
+
+		p_cam.global_transform = global_transform * portal_relative_matrix * Transform3D(Basis.IDENTITY, p)
+		p_cam.set_frustum(1.0, Vector2(-p.x,-p.y), abs(p.z), 10000)
+
 	RenderingServer.camera_set_transform(p_cam.get_camera_rid(), p_cam.global_transform)
 
 	if not use_screenspace:
@@ -101,4 +110,4 @@ func render_view(p_interface: XRInterface, p_view_index: int, p_cam: Camera3D) -
 		my_plane = Plane(Vector3(0,0,-1),-2.0 * (global_transform.affine_inverse() * tx.origin).z)
 		proj = oblique_near_plane(tx.affine_inverse() * global_transform * my_plane, proj)
 		proj = proj * Projection(tx.affine_inverse() * global_transform * portal_relative_matrix.affine_inverse() * global_transform.affine_inverse() * p_cam.global_transform)
-		p_cam.set("override_projection", proj)
+		p_cam.set("override_projection", Projection(Transform3D.FLIP_X) * proj)
