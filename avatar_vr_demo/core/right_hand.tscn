@@ -1,8 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://dg4bbgwi5omep"]
+[gd_scene load_steps=4 format=3 uid="uid://dg4bbgwi5omep"]
 
 [ext_resource type="PackedScene" uid="uid://c2cea5dniuvik" path="res://addons/godot-xr-tools/hands/scenes/highpoly/right_fullglove_hand.tscn" id="1_icupe"]
+[ext_resource type="Material" uid="uid://c1bt71pgxtpc6" path="res://addons/godot-xr-tools/hands/materials/labglove.material" id="2_tq4j1"]
+[ext_resource type="AnimationLibrary" uid="uid://df5dhaf5tmtho" path="res://addons/godot-xr-tools/hands/animations/right/Handpose_Library.res" id="3_u1kp2"]
 
 [node name="RightHand" instance=ExtResource("1_icupe")]
+hand_material_override = ExtResource("2_tq4j1")
 
 [node name="Skeleton3D" parent="Hand_R/Armature" index="0"]
 bones/1/rotation = Quaternion(-0.543239, 0.00366289, -0.20967, 0.812968)
@@ -27,5 +30,11 @@ bones/23/rotation = Quaternion(-0.0441928, 0.0356708, -0.114504, 0.991798)
 
 [node name="mesh_Hand_R" parent="Hand_R/Armature/Skeleton3D" index="0"]
 layers = 12
+
+[node name="AnimationTree" parent="." index="1"]
+root_node = NodePath("../Hand_R")
+libraries = {
+"Handpose_Library": ExtResource("3_u1kp2")
+}
 
 [editable path="Hand_R"]

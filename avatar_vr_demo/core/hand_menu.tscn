@@ -1,0 +1,101 @@
+[gd_scene load_steps=2 format=3 uid="uid://dmqfyjeui3jgs"]
+
+[ext_resource type="Script" path="res://avatar_vr_demo/core/hand_menu.gd" id="1_lm4ts"]
+
+[node name="HandMenu" type="Control" node_paths=PackedStringArray("clock_label", "fps_label")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -640.0
+offset_bottom = -392.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lm4ts")
+clock_label = NodePath("VBoxContainer/HBoxContainer/Clock")
+fps_label = NodePath("VBoxContainer/HBoxContainer/FPS")
+
+[node name="SecondTimer" type="Timer" parent="."]
+autostart = true
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="FPS" type="Label" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "FPS: "
+horizontal_alignment = 1
+
+[node name="Space" type="Control" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Clock" type="Label" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "HH:MM:SS"
+horizontal_alignment = 1
+
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+columns = 4
+
+[node name="ToggleSeatedModeButton" type="Button" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Seated"
+
+[node name="CalibrateButton" type="Button" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Recalibrate"
+
+[node name="Button3" type="Button" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Button4" type="Button" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Button5" type="Button" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Button6" type="Button" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SettingsButton" type="Button" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Settings"
+
+[node name="DisconnectButton" type="Button" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Disconnect"
+
+[connection signal="timeout" from="SecondTimer" to="." method="_on_second_timer_timeout"]

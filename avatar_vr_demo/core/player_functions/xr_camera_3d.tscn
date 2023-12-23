@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://ce872ikjxhoxv"]
+
+[node name="XRCamera3D" type="XRCamera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+cull_mask = 1048567
