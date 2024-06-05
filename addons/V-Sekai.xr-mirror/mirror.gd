@@ -30,12 +30,19 @@ func frame_pre_draw():
 	if not legacy_process_update:
 		update_mirror()
 
+func get_mirror_size() -> Vector2:
+	var interface = XRServer.primary_interface
+	if(interface):
+		return interface.get_render_target_size() * GameManager.mirror_resolution_scale
+	else:
+		return get_viewport().size * GameManager.mirror_resolution_scale
+
 func update_mirror() -> void:
 	var mirror_size: Vector2 = GameManager.get_mirror_size()
 	# Letterbox along the bigger axis. Not sure why it's tied to the viewport size if in XR
 	var aspect = global_transform.basis.y.length() / global_transform.basis.x.length()
-	if aspect > mirror_size.y / mirror_size.x:
-		mirror_size = Vector2(mirror_size.y / aspect, mirror_size.x)
+	if aspect < mirror_size.y / mirror_size.x:
+		mirror_size = Vector2(mirror_size.x / aspect, mirror_size.x)
 	else:
 		mirror_size = Vector2(mirror_size.x, mirror_size.x * aspect)
 	leftvp.size = mirror_size
@@ -45,6 +52,9 @@ func update_mirror() -> void:
 	if(interface and interface.get_tracking_status() != XRInterface.XR_NOT_TRACKING):
 		render_view(interface, 0, left_camera)
 		render_view(interface, 1, right_camera)
+	else:
+		var camera: Camera3D = get_viewport().get_camera_3d()
+		render_view(camera, 0, left_camera)
 
 func oblique_near_plane(clip_plane: Plane, matrix: Projection) -> Projection:
 	# Based on the paper
@@ -73,11 +83,20 @@ func oblique_near_plane(clip_plane: Plane, matrix: Projection) -> Projection:
 	matrix.w.z = c.w - matrix.w.w
 	return matrix
 
-func render_view(p_interface: XRInterface, p_view_index: int, p_cam: Camera3D) -> void:
-	var proj: Projection = p_interface.get_projection_for_view(p_view_index, 1.0, abs(0.1), 10000)
-	var tx: Transform3D = p_interface.get_transform_for_view(p_view_index, origin.global_transform)
+func render_view(p_interface: Object, p_view_index: int, p_cam: Camera3D) -> void:
+	var proj: Projection
+	var tx: Transform3D
+	if p_interface is XRInterface:
+		proj = p_interface.get_projection_for_view(p_view_index, 1.0, abs(0.1), 10000)
+		tx = p_interface.get_transform_for_view(p_view_index, origin.global_transform)
+	elif p_interface is Camera3D:
+		proj = p_interface.get_camera_projection()
+		tx = p_interface.global_transform
+	else:
+		p_interface.crash()
 
-	var p: Vector3 = global_transform.basis.inverse() * (tx.origin- global_transform.origin)
+	var global_transform_ortho := global_transform.orthonormalized()
+	var p: Vector3 = global_transform_ortho.basis.inverse() * (tx.origin- global_transform.origin)
 
 	var portal_relative_matrix: Transform3D
 	# Examples of portals and mirror matrices.
@@ -91,16 +110,16 @@ func render_view(p_interface: XRInterface, p_view_index: int, p_cam: Camera3D) -
 
 	if use_screenspace:
 		var my_plane: Plane
-		my_plane = Plane(Vector3(0,0,-1),-2.0 * (global_transform.affine_inverse() * tx.origin).z)
-		proj = oblique_near_plane(tx.affine_inverse() * global_transform * my_plane, proj)
-		proj = proj * Projection(tx.affine_inverse() * global_transform * portal_relative_matrix * Transform3D(Basis.IDENTITY, p))
+		my_plane = Plane(Vector3(0,0,-1),-2.0 * (global_transform_ortho.affine_inverse() * tx.origin).z)
+		proj = oblique_near_plane(tx.affine_inverse() * global_transform_ortho * my_plane, proj)
+		proj = proj * Projection(tx.affine_inverse() * global_transform_ortho * portal_relative_matrix * Transform3D(Basis.IDENTITY, p))
 		p_cam.set("override_projection",  Projection(Transform3D.FLIP_X) * proj *  Projection(Transform3D.FLIP_X))
 
 	if !use_screenspace:
 		var px = Projection(Vector4.ZERO, Vector4.ZERO, Vector4.ZERO, Vector4.ZERO)
 		p_cam.set("override_projection", px)
 
-	p_cam.global_transform = global_transform * portal_relative_matrix * Transform3D(Basis.FLIP_Z * Basis.FLIP_X, p * Vector3(1,1,-1))
-	p_cam.set_frustum(1.0, Vector2(p.x,-p.y), abs(p.z), 10000)
+	p_cam.global_transform = global_transform_ortho * portal_relative_matrix * Transform3D(Basis.FLIP_Z * Basis.FLIP_X, p * Vector3(1,1,-1))
+	p_cam.set_frustum(global_transform.basis.get_scale().y, Vector2(p.x,-p.y), abs(p.z), 10000)
 
 	RenderingServer.camera_set_transform(p_cam.get_camera_rid(), p_cam.global_transform)
