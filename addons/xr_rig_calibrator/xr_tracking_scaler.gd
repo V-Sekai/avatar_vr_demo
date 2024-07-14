@@ -26,7 +26,7 @@ func _process(delta: float) -> void:
 		return
 	if reference_skel == null or target_skel == null or xr_rig_root == null:
 		return
-	var target_armspan := get_armspan(target_skel)
+	var target_armspan := target_skel.global_basis.get_scale().length() / sqrt(3) * get_armspan(target_skel)
 	var reference_armspan := get_armspan(reference_skel)
 	var armspan_scale_factor: float = clampf(scale_mult * (target_armspan / reference_armspan), 0.01, 100.0)
 	xr_rig_root.global_basis = xr_rig_root.global_basis.orthonormalized() * Basis.from_scale(global_basis.get_scale()) * armspan_scale_factor
