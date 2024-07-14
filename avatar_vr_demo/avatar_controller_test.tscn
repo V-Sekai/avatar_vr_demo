@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://dkvffh53twgqk"]
+[gd_scene load_steps=17 format=3 uid="uid://dkvffh53twgqk"]
 
 [ext_resource type="PackedScene" uid="uid://bd5ud35o4lhqd" path="res://addons/xr_rig_calibrator/human_reference_rig.tscn" id="1_3wa6k"]
 [ext_resource type="Script" path="res://addons/renik/renik.gd" id="2_1qwi6"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://avatar_vr_demo/core/avatar_controller.gd" id="8_kcv1d"]
 [ext_resource type="Script" path="res://addons/renik/renik_placement_gait.gd" id="9_ncch2"]
 [ext_resource type="Script" path="res://addons/xr_rig_calibrator/copy_bones_modifier.gd" id="10_sfpus"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/asset_controller.gd" id="12_bedm7"]
 
 [sub_resource type="Resource" id="Resource_tm8l8"]
 resource_name = "ForwardGait"
@@ -529,6 +530,9 @@ active = true
 influence = 1.0
 script = ExtResource("10_sfpus")
 source_skeleton = NodePath("../../../../XRRig/IKSkeleton")
+
+[node name="AssetController" type="Node" parent="test_rig"]
+script = ExtResource("12_bedm7")
 
 [editable path="XRRig/ReferenceSkeleton"]
 [editable path="XRRig/IKSkeleton_bak"]
