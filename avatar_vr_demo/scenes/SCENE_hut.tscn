@@ -26,33 +26,10 @@ directional_shadow_blend_splits = true
 
 [node name="PlayerController" parent="." instance=ExtResource("3_6dvvs")]
 
-[node name="PlayerMovementController" parent="PlayerController" index="0" node_paths=PackedStringArray("player_controller", "xr_origin", "xr_camera", "position_interpolation")]
-player_controller = NodePath("..")
-xr_origin = NodePath("../PositionInterp/RotationInterp/XROrigin3D")
-xr_camera = NodePath("../PositionInterp/RotationInterp/XROrigin3D/XRCamera3D")
-position_interpolation = NodePath("../PositionInterp")
-
-[node name="PlayerMovementHeadOffset" parent="PlayerController/PlayerMovementController" index="0" node_paths=PackedStringArray("character_body")]
-character_body = NodePath("../..")
-
-[node name="PlayerMovementTurn" parent="PlayerController/PlayerMovementController" index="2" node_paths=PackedStringArray("rotation_interpolation")]
-rotation_interpolation = NodePath("../../PositionInterp/RotationInterp")
-
-[node name="RotationInterp" parent="PlayerController/PositionInterp" index="0" node_paths=PackedStringArray("anchor_node")]
-anchor_node = NodePath("XROrigin3D/XRCamera3D")
-
-[node name="XROrigin3D" parent="PlayerController/PositionInterp/RotationInterp" index="0" node_paths=PackedStringArray("xr_camera", "player_movement_controller")]
-xr_camera = NodePath("XRCamera3D")
-player_movement_controller = NodePath("../../../PlayerMovementController")
-
-[node name="Mirror" parent="." node_paths=PackedStringArray("left_camera", "right_camera", "origin", "leftvp", "rightvp") instance=ExtResource("4_rka68")]
+[node name="Mirror" parent="." node_paths=PackedStringArray("origin") instance=ExtResource("4_rka68")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.4, -2.4)
 surface_material_override/0 = SubResource("ShaderMaterial_41xys")
-left_camera = NodePath("LeftViewport/Camera3D")
-right_camera = NodePath("RightViewport/Camera3D")
 origin = NodePath("../PlayerController/PositionInterp/RotationInterp/XROrigin3D")
-leftvp = NodePath("LeftViewport")
-rightvp = NodePath("RightViewport")
 
 [node name="cc0_hut" parent="." instance=ExtResource("5_d0has")]
 

@@ -1,10 +1,10 @@
 [gd_scene load_steps=10 format=3 uid="uid://bnqnnnet4dw12"]
 
 [ext_resource type="Script" path="res://addons/godot-xr-tools/staging/staging.gd" id="1"]
-[ext_resource type="PackedScene" path="res://addons/godot-xr-tools/staging/loading_screen.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://buuc81udhfada" path="res://addons/godot-xr-tools/staging/loading_screen.tscn" id="2"]
 [ext_resource type="Script" path="res://start_xr.gd" id="3"]
 [ext_resource type="Shader" path="res://addons/godot-xr-tools/staging/fade.gdshader" id="4"]
-[ext_resource type="PackedScene" uid="uid://bj0t0hwtuf25g" path="res://addons/godot-xr-tools/misc/vr_common_shader_cache.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://d1pd5nbx8c0kt" path="res://addons/godot-xr-tools/misc/vr_common_shader_cache.tscn" id="5"]
 
 [sub_resource type="QuadMesh" id="4"]
 custom_aabb = AABB(-5000, -5000, -5000, 10000, 10000, 10000)
@@ -13,7 +13,7 @@ size = Vector2(2, 2)
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_snlak"]
 render_priority = 0
 shader = ExtResource("4")
-shader_parameter/alpha = null
+shader_parameter/alpha = 0.0
 
 [sub_resource type="Sky" id="1"]
 

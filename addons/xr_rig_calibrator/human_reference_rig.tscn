@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bd5ud35o4lhqd"]
 
-[ext_resource type="Script" path="./human_reference_rig.gd" id="1_ccoxu"]
+[ext_resource type="Script" path="res://addons/xr_rig_calibrator/human_reference_rig.gd" id="1_ccoxu"]
 
 [node name="GeneralSkeleton" type="Skeleton3D"]
 bones/0/name = "Root"

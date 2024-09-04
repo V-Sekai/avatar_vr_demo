@@ -1,12 +1,12 @@
-[gd_scene load_steps=4 format=3 uid="uid://co5k3ymytghxm"]
+[gd_scene load_steps=3 format=3 uid="uid://co5k3ymytghxm"]
 
-[ext_resource type="Theme" uid="uid://c16w7naqdopqa" path="res://addons/emote_ui/emote_ui_theme.tres" id="1_oik1v"]
-[ext_resource type="StyleBox" uid="uid://blaktbx48j71n" path="res://addons/emote_ui/button_pressed_stylebox.tres" id="2_qcetu"]
+[sub_resource type="Resource" id="Resource_a8lrw"]
+metadata/__load_path__ = "res://addons/emote_ui/emote_ui_theme.tres"
 
 [sub_resource type="Theme" id="Theme_m6dln"]
 Button/colors/font_color = Color(0.875, 0.875, 0.875, 1)
 Button/font_sizes/font_size = 32
-Button/styles/normal = ExtResource("2_qcetu")
+Button/styles/normal = null
 
 [node name="QuickMenu" type="Control"]
 layout_mode = 3
@@ -15,7 +15,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_oik1v")
+theme = SubResource("Resource_a8lrw")
 
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 1

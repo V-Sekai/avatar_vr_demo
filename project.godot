@@ -107,6 +107,7 @@ common/quality/msaa_2d=2
 
 [rendering]
 
+textures/vram_compression/import_etc2_astc=true
 xr/enabled=true
 
 [xr]
