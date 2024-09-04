@@ -18,12 +18,6 @@ shader_parameter/albedo_color = Color(1, 1, 1, 1)
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("1_rwmmv")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 0, 0)
-light_bake_mode = 1
-shadow_enabled = true
-directional_shadow_blend_splits = true
-
 [node name="PlayerController" parent="." instance=ExtResource("3_6dvvs")]
 
 [node name="Mirror" parent="." node_paths=PackedStringArray("origin") instance=ExtResource("4_rka68")]
@@ -37,14 +31,6 @@ origin = NodePath("../PlayerController/PositionInterp/RotationInterp/XROrigin3D"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 distance_fade_enabled = true
 omni_shadow_mode = 0
-
-[node name="ReflectionProbe" type="ReflectionProbe" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
-size = Vector3(10, 6, 6)
-origin_offset = Vector3(0, -1, 0)
-box_projection = true
-enable_shadows = true
-cull_mask = 1
 
 [editable path="PlayerController"]
 [editable path="cc0_hut"]
