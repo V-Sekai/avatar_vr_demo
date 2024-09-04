@@ -2,3 +2,5 @@
 .godot/*
 *.blend1
 avatar_vr_demo/test/*
+android/
+.DS_Store

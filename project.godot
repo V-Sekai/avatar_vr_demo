@@ -23,7 +23,7 @@ UGCLoaderManager="*res://addons/ugc_asset_loader/ugc_loader_manager.gd"
 
 [display]
 
-window/vsync/vsync_mode=0
+window/vsync/vsync_mode=3
 
 [editor_plugins]
 
@@ -108,9 +108,12 @@ common/quality/msaa_2d=2
 [rendering]
 
 textures/vram_compression/import_etc2_astc=true
+vrs/mode=2
 xr/enabled=true
 
 [xr]
 
 openxr/enabled=true
+openxr/extensions/hand_interaction_profile=true
+openxr/extensions/eye_gaze_interaction=true
 shaders/enabled=true
