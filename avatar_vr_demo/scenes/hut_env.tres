@@ -8,6 +8,3 @@ sky_material = SubResource("PhysicalSkyMaterial_mqnde")
 [resource]
 background_mode = 2
 sky = SubResource("Sky_qbv3c")
-tonemap_mode = 2
-glow_enabled = true
-fog_enabled = true
