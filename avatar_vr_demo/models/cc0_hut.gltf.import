@@ -65,35 +65,18 @@ _subresources={
 }
 },
 "nodes": {
-"PATH:Door_Base": {
-"generate/physics": true
-},
-"PATH:Door_Glass": {
-"generate/physics": true
-},
 "PATH:Hut": {
 "generate/physics": true,
 "physics/shape_type": 2
 },
-"PATH:PendantLight": {
-"generate/physics": true
+"PATH:HutShell": {
+"generate/physics": true,
+"physics/shape_type": 2
 },
 "PATH:Pendantlight_Long": {
-"generate/physics": true
+"physics/shape_type": 2
 },
 "PATH:Stool": {
-"generate/physics": true
-},
-"PATH:Window01_Base": {
-"generate/physics": true
-},
-"PATH:Window01_Glass": {
-"generate/physics": true
-},
-"PATH:Window02_Base": {
-"generate/physics": true
-},
-"PATH:Window02_Glass": {
 "generate/physics": true
 },
 "PATH:WorkingTable": {
