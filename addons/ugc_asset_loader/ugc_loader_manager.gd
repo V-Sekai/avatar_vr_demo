@@ -140,6 +140,7 @@ class AssetLoadRequest:
 	var resolved_uri: String
 	var cache_key: String
 	var processor_file_ext: String # Includes "."
+	var load_file_ext: String # Includes "."
 	var processor: processing_task_class = null
 	var validator: validator_class
 
@@ -187,7 +188,9 @@ class AssetLoadRequest:
 
 	func perform_download(ugc: ugc_class) -> bool:
 		state = State.STATE_DOWNLOADING
-		var is_godot_resource: bool = (processor == null or processor_file_ext.is_empty())
+		var is_godot_resource: bool = (processor == null)
+		if is_godot_resource:
+			processor_file_ext = "" # Should this be an assert instead?
 		download_request = ugc.get_download_manager().create_download_request(resolved_uri, disk_tmp_path + processor_file_ext, is_godot_resource)
 		var success: bool = await download_request.perform()
 		if _cancelled:
@@ -198,6 +201,8 @@ class AssetLoadRequest:
 		return success
 
 	func perform_processor(ugc: ugc_class) -> Object:
+		if processor == null:
+			return self
 		state = State.STATE_PROCESSING
 		processor.input_disk_path = disk_tmp_path + processor_file_ext
 		processor.output_res_path = disk_tmp_path

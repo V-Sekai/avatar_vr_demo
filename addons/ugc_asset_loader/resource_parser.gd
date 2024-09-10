@@ -24,7 +24,8 @@ static func validate_resource(p_filename: String, p_whitelisted_resource_types: 
 	'''
 	var f: FileAccess
 	f = FileAccess.open(p_filename, FileAccess.READ_WRITE)
-	var check_buf: String = f.get_buffer(4).get_string_from_ascii()
+	var start_buf: PackedByteArray = f.get_buffer(4)
+	var check_buf: String = start_buf.get_string_from_ascii()
 	if check_buf == "RSRC" or check_buf == "RSCC":
 		if p_force_revalidate:
 			if check_buf == "RSCC":
@@ -104,8 +105,8 @@ static func validate_resource(p_filename: String, p_whitelisted_resource_types: 
 					# Unrecognized UIDs could be exploited to link to future untrusted resources.
 		print("Check ext_resource " + str(er_type) + " at " + str(er_path) + " or " + str(er_uid_path))
 		# VALDIATE er_path
-		if not p_whitelisted_external_paths.has(er_uid_path):
-			print("Unrecognized subresource path " + str(er_path) + " type " + str(er_type) + " UID path " + str(er_uid_path))
+		if not p_whitelisted_external_paths.has(er_path):
+			print("Unrecognized subresource path " + str(er_path) + " type " + str(er_type))
 			return false
 	var int_resources_size: int = f.get_32()
 	print(int_resources_size)

@@ -65,6 +65,7 @@ class HTTPState:
 		cancelled = true
 
 	func http_tick() -> void:
+		print("HTTP: tick")
 		if not sent_request:
 			if cancelled:
 				if file:
@@ -76,23 +77,28 @@ class HTTPState:
 
 			var _poll_error: int = http.poll()
 			status = http.get_status()
+			print("HTTP: Before sent, Status is now " + str(status))
 
 			if status == HTTPClient.STATUS_CONNECTED or status == HTTPClient.STATUS_REQUESTING or status == HTTPClient.STATUS_BODY:
+				print("HTTP: Connection finished")
 				_connection_finished.emit(http)
 			elif status != HTTPClient.STATUS_CONNECTING and status != HTTPClient.STATUS_RESOLVING and status != HTTPClient.STATUS_CONNECTED:
-				printerr("GodotUroRequester: could not connect to host: status = %s" % [str(http.get_status())])
+				printerr("HTTPPool: could not connect to host: status = %s" % [str(http.get_status())])
 				_connection_finished.emit(null)
 				return
 			else:
 				pass
 		else:
 			status = http.get_status()
+			print("HTTP: After sent request, Status is now " + str(status))
 
 			if status != HTTPClient.STATUS_REQUESTING and status != HTTPClient.STATUS_BODY:
+				print("HTTP: Request finished after connect")
 				_request_finished.emit(false)
 				return
 
 			if cancelled:
+				print("HTTP: Cancelled")
 				if file:
 					file.close()
 				cancelled = false
@@ -102,6 +108,8 @@ class HTTPState:
 
 			if status == HTTPClient.STATUS_REQUESTING:
 				http.poll()
+				status = http.get_status()
+				print("HTTP: Status changed to " + str(status))
 				if status == HTTPClient.STATUS_BODY:
 					response_code = http.get_response_code()
 					var tmp_response_headers: Dictionary = http.get_response_headers_as_dictionary()
@@ -129,13 +137,14 @@ class HTTPState:
 					if not out_path.is_empty():
 						print(out_path)
 						file = FileAccess.open(out_path, FileAccess.WRITE)
-						if file.is_null():
+						if file == null:
 							status = HTTPClient.STATUS_CONNECTED  # failed to write to file
 							_request_finished.emit(false)
 							return
 
 			var last_yield = Time.get_ticks_msec()
 			while status == HTTPClient.STATUS_BODY:
+				print("HTTP: Status is " + str(status))
 				var _poll_error: int = http.poll()
 
 				var chunk: PackedByteArray = http.read_response_body_chunk()
@@ -174,17 +183,21 @@ class HTTPState:
 
 				status = http.get_status()
 				if status == HTTPClient.STATUS_CONNECTION_ERROR and !cancelled:
+					print("HTTP: Got error " + str(status))
 					if file:
 						file.close()
 					_request_finished.emit(false)
 					return
 
 				if status != HTTPClient.STATUS_BODY:
-					_request_finished.emit(true)
+					print("HTTP: Finished body " + str(status))
 					if file:
+						file.flush()
 						file.close()
+					_request_finished.emit(true)
 
 				if time - last_yield > YIELD_PERIOD_MS:
+					print("HTTP: yield expired " + str(status) + " "  + str(time - last_yield))
 					return
 
 	func connect_http(hostname: String, port: int, use_ssl: bool) -> HTTPClient:
@@ -205,24 +218,33 @@ class HTTPState:
 				if (not (connection is StreamPeerTLS)) and status == HTTPClient.STATUS_CONNECTED and connection.get_connected_host() == hostname and connection.get_connected_port() == port:
 					return http
 
-		status = http.get_status()
-		if status != HTTPClient.STATUS_DISCONNECTED and status != HTTPClient.STATUS_CONNECTED:
-			http.close()
-			http = HTTPClient.new()
-
-		if status != HTTPClient.STATUS_CONNECTED:
-			var tls_options: TLSOptions = TLSOptions.client(null)
-			connect_err = http.connect_to_host(hostname, port, tls_options)
-			if connect_err != OK:
-				printerr("GodotUroRequester: could not connect to host: returned error %s" % str(connect_err))
+		for i in range(3):
+			var _poll_error: int = http.poll()
+			status = http.get_status()
+			if _poll_error != OK or (status != HTTPClient.STATUS_DISCONNECTED and status != HTTPClient.STATUS_CONNECTED):
 				http.close()
 				http = HTTPClient.new()
-				return null
 
-		http_pool.http_tick.connect(self.http_tick)
-		var ret = await self._connection_finished
-		http_pool.http_tick.disconnect(self.http_tick)
-		return ret
+			if status != HTTPClient.STATUS_CONNECTED:
+				var tls_options: TLSOptions = TLSOptions.client(null)
+				print("Connect to " + str(hostname) + " : " + str(port) + " using ssl=" + str(use_ssl))
+				connect_err = http.connect_to_host(hostname, port, tls_options if use_ssl else null)
+				if connect_err != OK:
+					printerr("HTTPPool: could not connect to host: returned error %s" % str(connect_err))
+					http.close()
+					http = HTTPClient.new()
+					return null
+
+			http_pool.http_tick.connect(self.http_tick)
+			print("HTTP status was " + str(http.get_status()))
+			http = await self._connection_finished
+			http_pool.http_tick.disconnect(self.http_tick)
+			if (http != null and http.get_status() == HTTPClient.STATUS_CONNECTED):
+				print("HTTP status is now " + str(http.get_status()))
+				break
+			print("failed to connect " + str(http))
+			http = HTTPClient.new()
+		return http
 
 	func wait_for_request():
 		sent_request = true
@@ -357,6 +379,7 @@ func perform_request_object(hdr: HTTPDownloadRequest) -> bool:
 	else:
 		host = uri_parts[2]
 	hdr._set_http_state(await new_http_state())
+	hdr.http_state.adapt_godot_resource_header = hdr.is_godot_resource
 	hdr.http_state.set_output_path(hdr.output_file_path)
 	if hdr._cancelled:
 		hdr.connect_err = ERR_SKIP

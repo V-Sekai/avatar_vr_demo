@@ -56,10 +56,13 @@ func _process(_deltatime: float) -> void:
 				pass
 			ResourceLoader.THREAD_LOAD_FAILED, ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
 				_in_progress_tasks.remove_at(i)
+				print("Resource failed at " + str(ipt.path) + "!")
 				ipt.completed.emit(null)
 			ResourceLoader.THREAD_LOAD_LOADED:
 				_in_progress_tasks.remove_at(i)
-				ipt.completed.emit(ResourceLoader.load_threaded_get(ipt.path))
+				var loaded_resource: Resource = ResourceLoader.load_threaded_get(ipt.path)
+				print("Loaded " + str(ipt.path) + ": " + str(loaded_resource))
+				ipt.completed.emit(loaded_resource)
 	while len(_in_progress_tasks) < CONCURRENT_THREADED_LOADS:
 		var ipt: InProgressTask = _loading_queue.pop() as InProgressTask
 		if ipt == null:
@@ -75,6 +78,7 @@ func load(path: String) -> InProgressTask:
 		ipt = _loading_tasks[path] as InProgressTask
 		if ipt.was_cancelled():
 			ipt = null
+	# FIXME: We need to clean up stuff from _loading_tasks and _loading_queue
 	if ipt == null:
 		ipt = InProgressTask.new(path)
 		_loading_tasks[path] = ipt
@@ -83,6 +87,7 @@ func load(path: String) -> InProgressTask:
 		else:
 			_loading_queue.push(ipt)
 	ipt.ref()
+	ResourceLoader.load_threaded_request(path, "PackedScene", true, ResourceLoader.CACHE_MODE_IGNORE)
 	return ipt
 
 #class ResLoader:

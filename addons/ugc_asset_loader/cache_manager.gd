@@ -46,7 +46,7 @@ signal request_cancelled(p_url)
 
 var request_objects: Dictionary = {}
 
-var always_add_extension: String = ".bin" # Avoids risk of peppering of .zip / .exe / .dll on disk.
+var always_add_extension: String = ".scn" # Avoids risk of peppering of .zip / .exe / .dll on disk.
 var tmp_add_extension: String = ".tmp"
 
 var dir_access: DirAccess

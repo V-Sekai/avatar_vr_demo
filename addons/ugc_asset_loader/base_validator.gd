@@ -300,6 +300,7 @@ var valid_resource_whitelist: Dictionary= {
 	"PanoramaSkyMaterial": PanoramaSkyMaterial,
 	"ParticleProcessMaterial": ParticleProcessMaterial,
 	"PhysicalSkyMaterial": PhysicalSkyMaterial,
+	"ProceduralSkyMaterial": ProceduralSkyMaterial,
 	"PlaceholderMaterial": PlaceholderMaterial,
 	"ShaderMaterial": ShaderMaterial,
 	"CapsuleShape2D": CapsuleShape2D,

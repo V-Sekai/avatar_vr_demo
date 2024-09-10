@@ -7,9 +7,11 @@ const scene_processor = preload("res://addons/ugc_asset_loader/processing_task_s
 @export var uri: String = "res://addons/renik/sample_models/godette.glb"
 @export var cache_key: String = "godette"
 
+@export_enum("glTF .glb", "Godot .scn") var content_type: int = 0
 @export var unload_before_load: bool = false
 @export var failure_placeholder: PackedScene
 
+@export var test_loading_after_one_second: String
 
 var loading_cache_key: String 
 var asset_load_request: Object
@@ -18,14 +20,23 @@ var previous_cache_key: String
 var previous_loaded_node: Node
 var loading_placeholder_node: NodePath
 
+func set_uri(new_uri: String, new_cache_key: String):
+	uri = new_uri
+	cache_key = new_cache_key
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	if uri != null:
 		await load_next_asset()
 
+	if not test_loading_after_one_second.is_empty():
+		get_tree().create_timer(1.0).timeout.connect(self.set_uri.bind(test_loading_after_one_second, test_loading_after_one_second.split('/')[-1]))
+
 func load_next_asset():
 	if cache_key == loading_cache_key:
+		print("cache key is same as loading key " + str(uri))
 		return
+	print("Attempt to start loading " + str(uri))
 	if uri == "":
 		clear_currently_loaded_node()
 	if asset_load_request != null:
@@ -34,6 +45,7 @@ func load_next_asset():
 		asset_load_request = null
 		loading_cache_key = ""
 	if cache_key == previous_cache_key:
+		print("cache key is same as previous key " + str(uri))
 		return
 	if unload_before_load:
 		clear_currently_loaded_node()
@@ -42,7 +54,9 @@ func load_next_asset():
 	asset_load_request = alr
 	loading_cache_key = this_cache_key
 	show_placeholder(loading_cache_key, asset_load_request)
+	print("Start loading " + str(alr))
 	var loaded_node: Node = await UGCLoaderManager.load_asset(alr)
+	print("Finished loading " + str(alr))
 	if asset_load_request != alr:
 		if loaded_node != null:
 			loaded_node.queue_free()
@@ -71,7 +85,16 @@ func hide_placeholder():
 
 func create_load_request(new_cache_key: String) -> Object:
 	var validator := base_validator.new()
-	var alr := UGCLoaderManager.create_load_request(uri, uri, cache_key, ".glb", validator, gltf_processor.new())
+	var alr: Object
+	var ext := ".glb"
+	var processor: Object
+	if content_type == 1:
+		ext = ".scn"
+		processor = null
+	else:
+		processor = gltf_processor.new()
+
+	alr = UGCLoaderManager.create_load_request(uri, uri, cache_key, ext, validator, processor)
 	return alr
 
 
