@@ -192,11 +192,13 @@ class AssetLoadRequest:
 		if is_godot_resource:
 			processor_file_ext = "" # Should this be an assert instead?
 		download_request = ugc.get_download_manager().create_download_request(resolved_uri, disk_tmp_path + processor_file_ext, is_godot_resource)
-		var success: bool = await download_request.perform()
+		var success: bool = false
+		if download_request != null:
+			success = await download_request.perform()
 		if _cancelled:
 			success = false
 		# download_request.get_content_type()
-		if not success:
+		if not success and download_request != null:
 			delete_tmp_from_cache(ugc, not _cancelled and download_request.is_permanent_failure())
 		return success
 
@@ -278,12 +280,15 @@ func load_asset(alr: AssetLoadRequest) -> Node3D:
 	#var dir_access: DirAccess = _cache_manager.get_dir_access() # return dir_access.open("user://")
 	alr.disk_cache_path = _cache_manager.get_disk_cache_path(alr.cache_key)
 	if alr.disk_cache_path.is_empty() or alr._cancelled:
+		print("no disk " + alr.cache_key)
 		return null # Failed (could be tainted)
 
 	var skipped_validation_result_resource: PackedScene
 
+	print("check cache " + alr.cache_key)
 	if not _cache_manager.has_cache(alr.cache_key):
 		alr.create_tmp_cache(self)
+		print("try dl " + alr.resolved_uri)
 		var success: bool = await alr.perform_download(self)
 		if not success:
 			return null # Failed.

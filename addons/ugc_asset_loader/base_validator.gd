@@ -376,6 +376,14 @@ const valid_external_path_whitelist: Dictionary = {
 	"res://addons/network_manager/network_physics.gd": true,
 	"res://addons/smoothing/smoothing.gd": true,
 	"res://addons/mirror/mirror.gd": true,
+	"res://addons/vrm/vrm_toplevel.gd": true,
+	"res://addons/vrm/vrm_meta.gd": true,
+	"res://addons/vrm/vrm_secondary.gd": true,
+	"res://addons/vrm/vrm_springbone.gd": true,
+	"res://addons/vrm/vrm_collider.gd": true,
+	"res://addons/vrm/vrm_collider_group.gd": true,
+	"res://addons/vrm/node_constraint/bone_node_constraint.gd": true,
+	"res://addons/vrm/node_constraint/bone_node_constraint_applier.gd": true,
 }
 
 ################

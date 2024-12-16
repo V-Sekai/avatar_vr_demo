@@ -65,7 +65,7 @@ class HTTPState:
 		cancelled = true
 
 	func http_tick() -> void:
-		print("HTTP: tick")
+		# print("HTTP: tick")
 		if not sent_request:
 			if cancelled:
 				if file:
@@ -77,7 +77,7 @@ class HTTPState:
 
 			var _poll_error: int = http.poll()
 			status = http.get_status()
-			print("HTTP: Before sent, Status is now " + str(status))
+			# aprint("HTTP: Before sent, Status is now " + str(status))
 
 			if status == HTTPClient.STATUS_CONNECTED or status == HTTPClient.STATUS_REQUESTING or status == HTTPClient.STATUS_BODY:
 				print("HTTP: Connection finished")
@@ -141,6 +141,7 @@ class HTTPState:
 							status = HTTPClient.STATUS_CONNECTED  # failed to write to file
 							_request_finished.emit(false)
 							return
+				return
 
 			var last_yield = Time.get_ticks_msec()
 			while status == HTTPClient.STATUS_BODY:
@@ -148,6 +149,8 @@ class HTTPState:
 				var _poll_error: int = http.poll()
 
 				var chunk: PackedByteArray = http.read_response_body_chunk()
+				if http.get_status() != HTTPClient.STATUS_BODY and len(chunk) == 0:
+					return
 				response_code = http.get_response_code()
 				if adapt_godot_resource_header:
 					# Binary resources start with RSRC or RSCC.
@@ -176,7 +179,7 @@ class HTTPState:
 					file.store_buffer(chunk)
 				else:
 					response_body.append_array(chunk)
-				bytes += chunk.size()
+				bytes += len(chunk)
 				self.download_progressed.emit(bytes, total_bytes)
 
 				var time = Time.get_ticks_msec()
@@ -189,6 +192,7 @@ class HTTPState:
 					_request_finished.emit(false)
 					return
 
+				print(status)
 				if status != HTTPClient.STATUS_BODY:
 					print("HTTP: Finished body " + str(status))
 					if file:
@@ -199,6 +203,11 @@ class HTTPState:
 				if time - last_yield > YIELD_PERIOD_MS:
 					print("HTTP: yield expired " + str(status) + " "  + str(time - last_yield))
 					return
+				if http == null:
+					print("null http")
+					return
+				_poll_error = http.poll()
+				status = http.get_status()
 
 	func connect_http(hostname: String, port: int, use_ssl: bool) -> HTTPClient:
 		sent_request = false
@@ -356,7 +365,7 @@ func create_request_object(uri: String, method: HTTPClient.Method=HTTPClient.MET
 	return hdr
 	
 func perform_request_object(hdr: HTTPDownloadRequest) -> bool:
-	var uri_parts: PackedStringArray = hdr.uri.split("/", true, 4)
+	var uri_parts: PackedStringArray = hdr.uri.split("/", true, 3)
 	var is_secure: bool
 	var port: int
 	var host: String
@@ -385,6 +394,7 @@ func perform_request_object(hdr: HTTPDownloadRequest) -> bool:
 		hdr.connect_err = ERR_SKIP
 		hdr._clear_http_state()
 		return false
+	print("Connect " + host + "|" + str(port) + "|" + str(is_secure))
 	var hclient: HTTPClient = await hdr.http_state.connect_http(host, port, is_secure)
 	if hclient == null or hdr._cancelled:
 		hdr.connect_err = hdr.http_state.connect_err
