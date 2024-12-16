@@ -1,0 +1,155 @@
+[gd_scene load_steps=8 format=3 uid="uid://cup6qaa6bl70p"]
+
+[ext_resource type="Script" path="res://avatar_vr_demo/core/avatar_controller.gd" id="1_5wsb6"]
+[ext_resource type="Script" path="res://addons/renik/renik.gd" id="2_xlk5d"]
+[ext_resource type="Script" path="res://addons/renik/renik_placement.gd" id="3_bbup7"]
+[ext_resource type="Script" path="res://addons/renik/renik_placement_gait.gd" id="4_sa4qt"]
+
+[sub_resource type="Resource" id="Resource_v62g3"]
+resource_name = "ForwardGait"
+script = ExtResource("4_sa4qt")
+speed_scalar_min = 1.0
+speed_scalar_max = 0.5
+ground_time = 5.0
+lift_time_base = 10.0
+lift_time_scalar = 5.0
+apex_in_time_base = 10.0
+apex_in_time_scalar = 5.0
+apex_out_time_base = 5.0
+apex_out_time_scalar = 5.0
+drop_time_base = 5.0
+drop_time_scalar = 0.0
+tip_toe_distance_scalar = 1.5708
+tip_toe_speed_scalar = 0.785398
+tip_toe_angle_max = 1.0472
+lift_vertical = 0.0
+lift_vertical_scalar = 0.4
+lift_horizontal_scalar = 0.7
+lift_angle = 1.5708
+apex_vertical = 0.0
+apex_vertical_scalar = 0.1
+apex_angle = 0.392699
+drop_vertical = 0.0
+drop_vertical_scalar = 0.05
+drop_horizontal_scalar = 0.25
+drop_angle = -0.392699
+contact_point_ease = 0.05
+contact_point_ease_scalar = 0.4
+scaling_ease = 0.85
+
+[sub_resource type="Resource" id="Resource_w6aan"]
+resource_name = "BackwardGait"
+script = ExtResource("4_sa4qt")
+speed_scalar_min = 0.5
+speed_scalar_max = 0.75
+ground_time = 5.0
+lift_time_base = 5.0
+lift_time_scalar = 5.0
+apex_in_time_base = 10.0
+apex_in_time_scalar = 5.0
+apex_out_time_base = 10.0
+apex_out_time_scalar = 5.0
+drop_time_base = 5.0
+drop_time_scalar = 5.0
+tip_toe_distance_scalar = 0.0
+tip_toe_speed_scalar = 0.0
+tip_toe_angle_max = 0.0
+lift_vertical = 0.025
+lift_vertical_scalar = 0.1
+lift_horizontal_scalar = 0.33
+lift_angle = -0.392699
+apex_vertical = 0.1
+apex_vertical_scalar = 0.1
+apex_angle = 0.392699
+drop_vertical = 0.0
+drop_vertical_scalar = 0.1
+drop_horizontal_scalar = 0.25
+drop_angle = 0.392699
+contact_point_ease = 0.1
+contact_point_ease_scalar = 0.4
+scaling_ease = 0.85
+
+[sub_resource type="Resource" id="Resource_pklum"]
+resource_name = "SidewaysGait"
+script = ExtResource("4_sa4qt")
+speed_scalar_min = 0.75
+speed_scalar_max = 0.75
+ground_time = 10.0
+lift_time_base = 5.0
+lift_time_scalar = 5.0
+apex_in_time_base = 10.0
+apex_in_time_scalar = 5.0
+apex_out_time_base = 10.0
+apex_out_time_scalar = 5.0
+drop_time_base = 5.0
+drop_time_scalar = 5.0
+tip_toe_distance_scalar = 0.0
+tip_toe_speed_scalar = 0.0
+tip_toe_angle_max = 0.0
+lift_vertical = 0.05
+lift_vertical_scalar = 0.05
+lift_horizontal_scalar = 0.2
+lift_angle = 0.0
+apex_vertical = 0.01
+apex_vertical_scalar = 0.1
+apex_angle = 0.392699
+drop_vertical = 0.01
+drop_vertical_scalar = 0.05
+drop_horizontal_scalar = 0.25
+drop_angle = 0.0
+contact_point_ease = 0.1
+contact_point_ease_scalar = 0.4
+scaling_ease = 0.85
+
+[node name="AvatarController" type="Node3D"]
+script = ExtResource("1_5wsb6")
+
+[node name="RenIK" type="Node3D" parent="."]
+transform = Transform3D(1, 9.31323e-09, 0, -6.89179e-08, 1, 2.98023e-08, -7.45058e-09, -2.98023e-08, 1, 0, 0, 0)
+script = ExtResource("2_xlk5d")
+arm_elbow_direction_offset = 1.22173
+arm_upper_arm_twisting = 0.5
+arm_upper_arm_twist_offset = -0.872665
+arm_forearm_twisting = 0.66666
+arm_forearm_twist_offset = -0.872665
+arm_twist_inflection_point = 0.349066
+arm_twist_overflow = 0.785398
+arm_pole_offset = Quaternion(0.113039, -0.0652631, 0.495722, 0.858616)
+arm_target_position_influence = Vector3(2, -1.5, -1)
+arm_target_rotation_influence = 0.33
+arm_shoulder_offset = Quaternion(0, 0, 0, 1)
+arm_shoulder_pole_offset = Quaternion(0, 0, 0, 1)
+leg_thigh_twisting = 0.25
+leg_lower_leg_twisting = 0.25
+leg_lower_leg_twist_offset = 3.14159
+leg_twist_overflow = 0.785398
+leg_pole_offset = Quaternion(0, 0, 1, -4.37114e-08)
+leg_target_rotation_influence = 0.5
+torso_spine_curve = Vector3(0, 15, -15)
+torso_upper_spine_stiffness = 0.5
+torso_lower_spine_stiffness = 0.5
+torso_spine_twist = 1.0
+
+[node name="RenIKFootPlacement" type="Node3D" parent="."]
+transform = Transform3D(1, 1.11759e-08, 0, -6.70552e-08, 1, 0, -7.45058e-09, 0, 1, 0, 0, 0)
+script = ExtResource("3_bbup7")
+forward_gait = SubResource("Resource_v62g3")
+backward_gait = SubResource("Resource_w6aan")
+sideways_gait = SubResource("Resource_pklum")
+spine_length = 0.279549
+left_leg_length = 0.436078
+right_leg_length = 0.436078
+hip_offset = Vector3(3.24193e-09, -0.340921, 0.0225741)
+left_hip_offset = Vector3(0.109996, -0.15282, -0.0373533)
+right_hip_offset = Vector3(-0.109996, -0.15282, -0.0373532)
+enable_left_foot_placement = false
+enable_right_foot_placement = false
+
+[node name="Hips" type="Node3D" parent="RenIKFootPlacement"]
+transform = Transform3D(0.999991, -0.00278707, 0.00313879, 0.00296821, 0.998239, -0.0592457, -0.00296813, 0.0592545, 0.998239, 1.03994, 0.648485, 0.0054305)
+
+[node name="LeftFoot" type="Node3D" parent="RenIKFootPlacement"]
+transform = Transform3D(-1, 0, -1.11759e-08, -6.70552e-08, 0, 1, -7.45058e-09, 1, -8.32669e-17, 1.15172, 0.0216831, -0.0589803)
+
+[node name="RightFoot" type="Node3D" parent="RenIKFootPlacement"]
+transform = Transform3D(-1, 0, -1.11759e-08, -6.70552e-08, 0, 1, -7.45058e-09, 1, -8.32669e-17, 0.931725, 0.021683, -0.0589802)

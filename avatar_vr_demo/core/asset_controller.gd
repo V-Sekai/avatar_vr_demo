@@ -13,16 +13,28 @@ const scene_processor = preload("res://addons/ugc_asset_loader/processing_task_s
 
 @export var test_loading_after_one_second: String
 
-var loading_cache_key: String 
+@export var instance_scenes: Array[PackedScene]
+
+var loading_cache_key: String
 var asset_load_request: Object
 var previous_cache_key: String
 
 var previous_loaded_node: Node
 var loading_placeholder_node: NodePath
 
+var child_nodes: Array[Node]
+var instantiated_child_nodes: Array[Node]
+
 func set_uri(new_uri: String, new_cache_key: String):
 	uri = new_uri
 	cache_key = new_cache_key
+
+func _enter_tree():
+	var chld := get_children()
+	for nd in chld:
+		child_nodes.append(nd)
+	for n in range(len(chld) - 1, -1, -1):
+		remove_child(chld[n])
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -100,6 +112,12 @@ func create_load_request(new_cache_key: String) -> Object:
 
 func clear_currently_loaded_node():
 	if previous_loaded_node != null:
+		for n in range(len(child_nodes) - 1, -1, -1):
+			previous_loaded_node.remove_child(child_nodes[n])
+		for n in range(len(instantiated_child_nodes) - 1, -1, -1):
+			previous_loaded_node.remove_child(instantiated_child_nodes[n])
+			instantiated_child_nodes[n].queue_free()
+		instantiated_child_nodes.clear()
 		#if previous_loaded_node.get_parent() == get_parent():
 		if previous_loaded_node.get_parent() != null:
 			previous_loaded_node.get_parent().remove_child(previous_loaded_node)
@@ -114,6 +132,12 @@ func node_completed(loaded_node: Node, loaded_cache_key: String):
 	previous_loaded_node = loaded_node
 	previous_cache_key = loaded_cache_key
 	get_parent().add_child(loaded_node)
+	for nd in child_nodes:
+		loaded_node.add_child(nd)
+	for ps in instance_scenes:
+		var instantiated = ps.instantiate()
+		loaded_node.add_child(instantiated)
+		instantiated_child_nodes.append(instantiated)
 
 
 func node_failed(failed_cache_key: String):
@@ -121,10 +145,7 @@ func node_failed(failed_cache_key: String):
 	previous_loaded_node = null
 	previous_cache_key = ""
 	if failure_placeholder != null:
-		var loaded_node: Node = failure_placeholder.instantiate()
-		previous_loaded_node = loaded_node
-		previous_cache_key = failed_cache_key
-		get_parent().add_child(loaded_node)
+		node_completed(failure_placeholder.instantiate(), failed_cache_key)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

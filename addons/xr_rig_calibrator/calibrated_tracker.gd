@@ -17,7 +17,7 @@ extends Node3D
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
-	if raw_tracker_node == null:
+	if raw_tracker_node == null or not raw_tracker_node.visible:
 		visible = false
 		return
 	#var parent := get_parent_node_3d()

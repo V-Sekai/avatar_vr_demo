@@ -8,6 +8,7 @@ const calibrated_tracker_script := preload("./calibrated_tracker.gd")
 @export var calibration: bool = false
 @export var calibrate_once: bool = false
 @export var override_xr_active: bool = true
+@export var use_xr_camera_node: bool = false
 
 @export var raw_tracker_root: Node3D
 @export var raw_trackers: Array[Node3D]
@@ -35,7 +36,7 @@ func find_raw_trackers() -> Dictionary:
 		if matched != raw_tracker_root.get_child_count():
 			raw_trackers.clear()
 			for n in raw_tracker_root.get_children():
-				if n is Node3D:
+				if n is Node3D and n.visible:
 					raw_trackers.append(n)
 
 	# exclude hands and head from whitelist for now. those are automatic.
@@ -67,7 +68,7 @@ func find_raw_trackers() -> Dictionary:
 				&"head":
 					builtin_bone_name = "Head"
 		var xr_camera = tracker as XRCamera3D
-		if xr_camera:
+		if use_xr_camera_node and xr_camera:
 			builtin_bone_name = "Head"
 		if not builtin_bone_name.is_empty() and connected_tracked_bones.get(builtin_bone_name) == null:
 			connected_trackers[tracker] = builtin_bone_name

@@ -1,0 +1,273 @@
+[gd_scene load_steps=31 format=3 uid="uid://gtv6ckip6s25"]
+
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_controller.gd" id="1_a16tm"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_movement_controller.gd" id="2_l41su"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_movement/player_movement_head_offset.gd" id="3_2sjj3"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_movement/player_movement_jump.gd" id="4_btq68"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_movement/player_movement_turn.gd" id="5_1ylj0"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_movement/player_movement_direct.gd" id="6_aq5kp"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/interpolate_origin_to_zero_node_3d.gd" id="7_0huwt"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/interpolate_angle_to_zero_anchored_node_3d.gd" id="8_at8gx"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/player_xr_origin.gd" id="9_1sbse"]
+[ext_resource type="PackedScene" uid="uid://ce872ikjxhoxv" path="res://avatar_vr_demo/core/player_functions/xr_camera_3d.tscn" id="10_b7iti"]
+[ext_resource type="PackedScene" uid="uid://ftfgiu7f6lwh" path="res://avatar_vr_demo/models/godot_head.gltf" id="11_kxtpr"]
+[ext_resource type="PackedScene" uid="uid://dcetw2k3x2jg5" path="res://avatar_vr_demo/core/left_hand.tscn" id="12_xlts7"]
+[ext_resource type="PackedScene" uid="uid://dwym0tadklcmg" path="res://avatar_vr_demo/core/player_functions/xr_controller/xr_controller_movement_direct.tscn" id="13_27amy"]
+[ext_resource type="PackedScene" uid="uid://7f42cd5n28nu" path="res://avatar_vr_demo/core/player_functions/xr_controller/xr_controller_movement_jump.tscn" id="14_b1qw8"]
+[ext_resource type="PackedScene" uid="uid://dg4bbgwi5omep" path="res://avatar_vr_demo/core/right_hand.tscn" id="15_waus3"]
+[ext_resource type="PackedScene" uid="uid://qecslyswsnjn" path="res://avatar_vr_demo/core/player_functions/xr_controller/xr_controller_movement_turn.tscn" id="16_kc2tu"]
+[ext_resource type="PackedScene" uid="uid://bd5ud35o4lhqd" path="res://addons/xr_rig_calibrator/human_reference_rig.tscn" id="17_mamgx"]
+[ext_resource type="Script" path="res://addons/xr_rig_calibrator/calibration_orchestrator.gd" id="18_uicnk"]
+[ext_resource type="Script" path="res://addons/xr_rig_calibrator/calibrated_tracker.gd" id="19_fogjn"]
+[ext_resource type="Script" path="res://avatar_vr_demo/core/asset_controller.gd" id="21_s26u8"]
+[ext_resource type="Script" path="res://addons/xr_rig_calibrator/xr_tracking_scaler.gd" id="22_xpw3c"]
+[ext_resource type="PackedScene" uid="uid://cup6qaa6bl70p" path="res://avatar_vr_demo/core/avatar_controller.tscn" id="27_k7y0o"]
+[ext_resource type="Script" path="res://addons/xr_rig_calibrator/rig_to_rig_calibrator.gd" id="28_bbi15"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_bmdul"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_1tpij"]
+sky_material = SubResource("ProceduralSkyMaterial_bmdul")
+
+[sub_resource type="Environment" id="Environment_6pthe"]
+background_mode = 2
+sky = SubResource("Sky_1tpij")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3qrpw"]
+radius = 0.1
+height = 1.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yo1rx"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_f8anq"]
+radius = 0.1
+height = 0.2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ilr8b"]
+size = Vector3(10, 0, 10)
+
+[node name="PlayerController" type="CharacterBody3D"]
+script = ExtResource("1_a16tm")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_6pthe")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="PlayerMovementController" type="Node" parent="." node_paths=PackedStringArray("player_controller", "xr_origin", "xr_camera", "position_interpolation")]
+script = ExtResource("2_l41su")
+player_controller = NodePath("..")
+xr_origin = NodePath("../PositionInterp/RotationInterp/XRRig/XROrigin3D")
+xr_camera = NodePath("../PositionInterp/RotationInterp/XRRig/XROrigin3D/XRCamera3D")
+position_interpolation = NodePath("../PositionInterp")
+
+[node name="PlayerMovementHeadOffset" type="Node" parent="PlayerMovementController" node_paths=PackedStringArray("character_body")]
+script = ExtResource("3_2sjj3")
+character_body = NodePath("../..")
+
+[node name="PlayerMovementJump" type="Node" parent="PlayerMovementController"]
+script = ExtResource("4_btq68")
+
+[node name="PlayerMovementTurn" type="Node" parent="PlayerMovementController" node_paths=PackedStringArray("rotation_interpolation")]
+script = ExtResource("5_1ylj0")
+rotation_interpolation = NodePath("../../PositionInterp/RotationInterp")
+
+[node name="PlayerMovementDirect" type="Node" parent="PlayerMovementController"]
+script = ExtResource("6_aq5kp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("CapsuleShape3D_3qrpw")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.464203, 2.27596)
+
+[node name="PositionInterp" type="Node3D" parent="."]
+script = ExtResource("7_0huwt")
+
+[node name="RotationInterp" type="Node3D" parent="PositionInterp" node_paths=PackedStringArray("anchor_node")]
+script = ExtResource("8_at8gx")
+anchor_node = NodePath("XRRig/XROrigin3D/XRCamera3D")
+
+[node name="XRRig" type="Node3D" parent="PositionInterp/RotationInterp"]
+transform = Transform3D(0.66068, 0, 0, 0, 0.66068, 0, 0, 0, 0.66068, 0, 0, 0)
+
+[node name="XROrigin3D" type="XROrigin3D" parent="PositionInterp/RotationInterp/XRRig" node_paths=PackedStringArray("xr_camera", "player_movement_controller")]
+transform = Transform3D(3.7575, 0, 0, 0, 3.7575, 0, 0, 0, 3.7575, 0, 0, 0)
+current = true
+script = ExtResource("9_1sbse")
+xr_camera = NodePath("XRCamera3D")
+player_movement_controller = NodePath("../../../../PlayerMovementController")
+xr_camera_scene = ExtResource("10_b7iti")
+head_child_scenes = Array[PackedScene]([ExtResource("11_kxtpr")])
+left_hand_child_scenes = Array[PackedScene]([ExtResource("12_xlts7"), ExtResource("13_27amy"), ExtResource("14_b1qw8")])
+right_hand_child_scenes = Array[PackedScene]([ExtResource("15_waus3"), ExtResource("16_kc2tu"), ExtResource("14_b1qw8")])
+
+[node name="XRCamera3D" parent="PositionInterp/RotationInterp/XRRig/XROrigin3D" instance=ExtResource("10_b7iti")]
+transform = Transform3D(0.402819, 0, 0, 0, 0.402819, 0, 0, 0, 0.402819, 0, 1.5, 0)
+visible = false
+
+[node name="LeftController" type="XRController3D" parent="PositionInterp/RotationInterp/XRRig/XROrigin3D"]
+transform = Transform3D(0.265939, -0.00804323, -0.0031443, 0.0086351, 0.249044, 0.0932754, 0.000123385, -0.0933286, 0.249173, 0.171961, 0.39389, -0.00150392)
+tracker = &"left_hand"
+
+[node name="Head" type="XRController3D" parent="PositionInterp/RotationInterp/XRRig/XROrigin3D"]
+transform = Transform3D(0.265939, -0.00804323, -0.0031443, 0.0086351, 0.249044, 0.0932754, 0.000123385, -0.0933286, 0.249173, 0.171961, 0.39389, -0.00150392)
+tracker = &"head"
+
+[node name="RightController" type="XRController3D" parent="PositionInterp/RotationInterp/XRRig/XROrigin3D"]
+transform = Transform3D(0.287204, 0, 0, 0, 0.0742721, 0.277434, 0, -0.277434, 0.0742721, -0.20411, 0.396497, -0.00739347)
+tracker = &"right_hand"
+
+[node name="XROriginDebug" type="MeshInstance3D" parent="PositionInterp/RotationInterp/XRRig/XROrigin3D"]
+visible = false
+material_override = SubResource("StandardMaterial3D_yo1rx")
+mesh = SubResource("SphereMesh_f8anq")
+
+[node name="ReferenceSkeleton" parent="PositionInterp/RotationInterp/XRRig" instance=ExtResource("17_mamgx")]
+visible = false
+bones/14/scale = Vector3(1, 0.999392, 0.999392)
+bones/33/scale = Vector3(1, 0.999392, 0.999392)
+
+[node name="LeftHand" type="BoneAttachment3D" parent="PositionInterp/RotationInterp/XRRig/ReferenceSkeleton"]
+transform = Transform3D(0, 1, 0, 0, 0, -1, -1, 0, 0, 0.684088, 1.39428, -0.054946)
+bone_name = "LeftHand"
+bone_idx = 13
+
+[node name="Head" type="BoneAttachment3D" parent="PositionInterp/RotationInterp/XRRig/ReferenceSkeleton"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.54646, -0.016308)
+bone_name = "Head"
+bone_idx = 6
+
+[node name="Hips" type="BoneAttachment3D" parent="PositionInterp/RotationInterp/XRRig/ReferenceSkeleton"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+bone_name = "Hips"
+bone_idx = 1
+
+[node name="CalibratedRig" type="Node3D" parent="PositionInterp/RotationInterp/XRRig" node_paths=PackedStringArray("skel", "raw_tracker_root", "raw_trackers")]
+script = ExtResource("18_uicnk")
+skel = NodePath("../ReferenceSkeleton")
+raw_tracker_root = NodePath("../XROrigin3D")
+raw_trackers = [NodePath("../XROrigin3D/XRCamera3D"), NodePath("../XROrigin3D/LeftController"), NodePath("../XROrigin3D/RightController")]
+
+[node name="Hips" type="Marker3D" parent="PositionInterp/RotationInterp/XRRig/CalibratedRig"]
+transform = Transform3D(-3.53778, 0.882651, 0.910935, 1.18006, 1.30059, 3.32276, 0.465126, 3.41382, -1.50142, -1.22507e-08, 1, 0)
+visible = false
+script = ExtResource("19_fogjn")
+position_offset = Vector3(0.00529895, 0.0020292, 0.0583851)
+rotation_euler_offset = Vector3(-1.08459, 2.59625, 0.736846)
+
+[node name="LeftFoot" type="Marker3D" parent="PositionInterp/RotationInterp/XRRig/CalibratedRig"]
+transform = Transform3D(2.85238, 1.5232, -1.91535, -2.0569, 3.08593, -0.609063, 1.32584, 1.51051, 3.17573, 0.078713, 0.083716, -0.0412092)
+visible = false
+script = ExtResource("19_fogjn")
+position_offset = Vector3(0.166987, -0.135736, -0.12639)
+rotation_euler_offset = Vector3(0.162776, -0.54271, -0.587916)
+
+[node name="RightFoot" type="Marker3D" parent="PositionInterp/RotationInterp/XRRig/CalibratedRig"]
+transform = Transform3D(3.53778, 0.852432, 0.939276, -1.18006, 3.23248, 1.51108, -0.465129, -1.71734, 3.31047, -0.0787131, 0.0837161, -0.0412091)
+visible = false
+script = ExtResource("19_fogjn")
+position_offset = Vector3(-0.0699133, -0.0348378, -0.0380417)
+rotation_euler_offset = Vector3(-0.413771, 0.276463, -0.35003)
+
+[node name="LeftHand" type="Marker3D" parent="PositionInterp/RotationInterp/XRRig/CalibratedRig" node_paths=PackedStringArray("raw_tracker_node")]
+transform = Transform3D(6.49563e-06, 1.51359, 2.70651e-07, -6.3152e-07, 1.80434e-07, -1.51359, -1.51359, 6.58585e-06, 5.41303e-07, 0.683944, 1.39399, -0.0549343)
+script = ExtResource("19_fogjn")
+raw_tracker_node = NodePath("../../XROrigin3D/LeftController")
+position_offset = Vector3(0.00930551, -0.0171385, -0.0204297)
+rotation_euler_offset = Vector3(1.21103, -3.04928, 1.65677)
+
+[node name="RightHand" type="Marker3D" parent="PositionInterp/RotationInterp/XRRig/CalibratedRig" node_paths=PackedStringArray("raw_tracker_node")]
+transform = Transform3D(4.51086e-06, -1.51359, 3.78912e-06, -1.80434e-07, -3.78912e-06, -1.51359, 1.51359, 4.51086e-06, -1.80434e-07, -0.683944, 1.39399, -0.0549344)
+script = ExtResource("19_fogjn")
+raw_tracker_node = NodePath("../../XROrigin3D/RightController")
+position_offset = Vector3(0.0220889, 0.000384152, -0.0265092)
+rotation_euler_offset = Vector3(0.261577, 3.14159, -1.5708)
+
+[node name="Head" type="Marker3D" parent="PositionInterp/RotationInterp/XRRig/CalibratedRig" node_paths=PackedStringArray("raw_tracker_node")]
+transform = Transform3D(1.51279, -0.0457539, -0.0178863, 0.0491208, 1.41669, 0.5306, 0.000701875, -0.530901, 1.41743, 0.769975, -2.35393, 1.41371)
+script = ExtResource("19_fogjn")
+raw_tracker_node = NodePath("../../XROrigin3D/Head")
+position_offset = Vector3(0, -1.08852, -0.00433921)
+
+[node name="test_rig" type="Node3D" parent="PositionInterp/RotationInterp"]
+transform = Transform3D(0.979533, 0, 0, 0, 0.979533, 0, 0, 0, 0.979533, 0, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="PositionInterp/RotationInterp/test_rig"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PositionInterp/RotationInterp/test_rig/StaticBody3D"]
+shape = SubResource("BoxShape3D_ilr8b")
+
+[node name="XAssetController2" type="Node" parent="PositionInterp/RotationInterp/test_rig"]
+script = ExtResource("21_s26u8")
+uri = "xres://addons/renik/sample_models/godette.glb"
+
+[node name="AvatarContainer" type="Node3D" parent="PositionInterp/RotationInterp"]
+
+[node name="XRTrackingScaler" type="Node3D" parent="PositionInterp/RotationInterp/AvatarContainer" node_paths=PackedStringArray("reference_skel", "xr_rig_root")]
+transform = Transform3D(0.979533, 0, 0, 0, 0.979533, 0, 0, 0, 0.979533, 0, 0, 0)
+script = ExtResource("22_xpw3c")
+reference_skel = NodePath("../../XRRig/ReferenceSkeleton")
+xr_rig_root = NodePath("../../XRRig")
+scale_mult = 1.01
+
+[node name="AssetController" type="Node" parent="PositionInterp/RotationInterp/AvatarContainer"]
+script = ExtResource("21_s26u8")
+uri = "http://localhost:8000/vrm_samples/Godette_vrm_v4.vrm"
+cache_key = "godettea"
+instance_scenes = Array[PackedScene]([ExtResource("27_k7y0o")])
+
+[node name="IKTargets" type="Node3D" parent="PositionInterp/RotationInterp/AvatarContainer" node_paths=PackedStringArray("source_skel", "src_tracker_root", "src_trackers")]
+script = ExtResource("28_bbi15")
+source_skel = NodePath("../../XRRig/ReferenceSkeleton")
+src_tracker_root = NodePath("../../XRRig/CalibratedRig")
+src_trackers = [NodePath("../../XRRig/CalibratedRig/Hips"), NodePath("../../XRRig/CalibratedRig/LeftFoot"), NodePath("../../XRRig/CalibratedRig/RightFoot"), NodePath("../../XRRig/CalibratedRig/LeftHand"), NodePath("../../XRRig/CalibratedRig/RightHand"), NodePath("../../XRRig/CalibratedRig/Head")]
+
+[node name="Hips" type="Marker3D" parent="PositionInterp/RotationInterp/AvatarContainer/IKTargets" node_paths=PackedStringArray("raw_tracker_node")]
+transform = Transform3D(0.94024, 0.128379, 0.315385, -0.0878551, 0.986308, -0.139563, -0.328984, 0.103515, 0.938645, -0.116295, 0.319445, -0.313309)
+visible = false
+script = ExtResource("19_fogjn")
+raw_tracker_node = NodePath("../../../XRRig/CalibratedRig/Hips")
+position_offset = Vector3(-5.06539e-16, 5.96046e-08, 3.72529e-09)
+
+[node name="LeftFoot" type="Marker3D" parent="PositionInterp/RotationInterp/AvatarContainer/IKTargets" node_paths=PackedStringArray("raw_tracker_node")]
+transform = Transform3D(0.758956, 0.405292, -0.509631, -0.547297, 0.821099, -0.162058, 0.352777, 0.401914, 0.844993, 0.0530864, 0.0667383, -0.00528627)
+visible = false
+script = ExtResource("19_fogjn")
+raw_tracker_node = NodePath("../../../XRRig/CalibratedRig/LeftFoot")
+position_offset = Vector3(0.0590626, 0.0106881, -0.00400375)
+
+[node name="RightFoot" type="Marker3D" parent="PositionInterp/RotationInterp/AvatarContainer/IKTargets" node_paths=PackedStringArray("raw_tracker_node")]
+transform = Transform3D(0.941326, 0.226814, 0.249921, -0.313988, 0.86009, 0.402064, -0.123761, -0.456946, 0.880843, -0.0360971, 0.0298378, -0.011493)
+visible = false
+script = ExtResource("19_fogjn")
+raw_tracker_node = NodePath("../../../XRRig/CalibratedRig/RightFoot")
+position_offset = Vector3(-0.0590626, 0.0106881, -0.00400372)
+
+[node name="LeftHand" type="Marker3D" parent="PositionInterp/RotationInterp/AvatarContainer/IKTargets" node_paths=PackedStringArray("raw_tracker_node")]
+transform = Transform3D(4.17233e-06, 1, 5.96046e-08, -4.17233e-07, 0, -1, -1, 4.23193e-06, 3.57628e-07, 0.442497, 0.928079, -0.0438563)
+script = ExtResource("19_fogjn")
+raw_tracker_node = NodePath("../../../XRRig/CalibratedRig/LeftHand")
+position_offset = Vector3(0.0114462, -0.0141846, -0.0107415)
+
+[node name="RightHand" type="Marker3D" parent="PositionInterp/RotationInterp/AvatarContainer/IKTargets" node_paths=PackedStringArray("raw_tracker_node")]
+transform = Transform3D(2.86102e-06, -1, 2.563e-06, -1.78814e-07, -2.6226e-06, -1, 1, 2.92063e-06, -2.38419e-07, -0.442497, 0.928079, -0.0438564)
+script = ExtResource("19_fogjn")
+raw_tracker_node = NodePath("../../../XRRig/CalibratedRig/RightHand")
+position_offset = Vector3(-0.0114462, -0.0141847, -0.0107415)
+
+[node name="Head" type="Marker3D" parent="PositionInterp/RotationInterp/AvatarContainer/IKTargets" node_paths=PackedStringArray("raw_tracker_node")]
+transform = Transform3D(0.999473, -0.0302287, -0.0118171, 0.0324531, 0.935979, 0.350557, 0.000463715, -0.350756, 0.936467, 0.50836, -1.54457, 0.93851)
+script = ExtResource("19_fogjn")
+raw_tracker_node = NodePath("../../../XRRig/CalibratedRig/Head")
+position_offset = Vector3(3.24192e-09, 0.0126789, 0.0120216)
+
+[editable path="PositionInterp/RotationInterp/XRRig/ReferenceSkeleton"]
