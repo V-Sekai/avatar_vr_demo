@@ -8,6 +8,8 @@ extends Node
 
 const queue_lib = preload("./queue_lib.gd")
 
+const validator_class = preload("./base_validator.gd")
+
 class InProgressTask extends RefCounted:
 	var path: String
 	var _refcount: int = 0
@@ -41,6 +43,13 @@ var _in_progress_tasks: Array[InProgressTask]
 
 const CONCURRENT_THREADED_LOADS: int = 8
 
+var whitelist_supported: bool = false
+
+func _init():
+	for m in ResourceLoader.get_method_list():
+		if m["name"] == &"load_threaded_request_whitelisted":
+			whitelist_supported = true
+
 func _ready() -> void:
 	set_process(true)
 
@@ -57,11 +66,13 @@ func _process(_deltatime: float) -> void:
 			ResourceLoader.THREAD_LOAD_FAILED, ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
 				_in_progress_tasks.remove_at(i)
 				print("Resource failed at " + str(ipt.path) + "!")
+				_loading_tasks.erase(ipt.path)
 				ipt.completed.emit(null)
 			ResourceLoader.THREAD_LOAD_LOADED:
 				_in_progress_tasks.remove_at(i)
 				var loaded_resource: Resource = ResourceLoader.load_threaded_get(ipt.path)
 				print("Loaded " + str(ipt.path) + ": " + str(loaded_resource))
+				_loading_tasks.erase(ipt.path)
 				ipt.completed.emit(loaded_resource)
 	while len(_in_progress_tasks) < CONCURRENT_THREADED_LOADS:
 		var ipt: InProgressTask = _loading_queue.pop() as InProgressTask
@@ -72,7 +83,7 @@ func _process(_deltatime: float) -> void:
 		_in_progress_tasks.append(ipt)
 		var x = await ipt.completed
 
-func load(path: String) -> InProgressTask:
+func load(path: String, validator: validator_class=null) -> InProgressTask:
 	var ipt: InProgressTask = null
 	if _loading_tasks.has(path):
 		ipt = _loading_tasks[path] as InProgressTask
@@ -87,7 +98,14 @@ func load(path: String) -> InProgressTask:
 		else:
 			_loading_queue.push(ipt)
 	ipt.ref()
-	ResourceLoader.load_threaded_request(path, "PackedScene", true, ResourceLoader.CACHE_MODE_IGNORE)
+	if validator and whitelist_supported:
+		ResourceLoader.call(&"load_threaded_request_whitelisted", path,
+				validator.get_external_path_whitelist(), validator.get_resource_class_whitelist(),
+				"PackedScene", true, ResourceLoader.CACHE_MODE_IGNORE)
+	else:
+		if validator:
+			push_warning("This Godot build is missing the ResourceLoader whitelist patch. Performing validation only in GDScript.")
+		ResourceLoader.load_threaded_request(path, "PackedScene", true, ResourceLoader.CACHE_MODE_IGNORE)
 	return ipt
 
 #class ResLoader:

@@ -62,6 +62,11 @@ func _perform() -> bool:
 	var packed_scene: PackedScene = PackedScene.new()
 	packed_scene.pack(generated_scene)
 	output_resource = packed_scene
+	print("OUTPUT RES " + str(output_res_path))
 	if not output_res_path.is_empty():
-		ResourceSaver.save(packed_scene, output_res_path, ResourceSaver.FLAG_COMPRESS)
+		err = ResourceSaver.save(packed_scene, output_res_path + ".res", ResourceSaver.FLAG_COMPRESS)
+		if err != OK:
+			push_error("Failed to save " + str(output_res_path) + ": " + str(err))
+			return false
+		DirAccess.open("user://").rename_absolute(output_res_path + ".res", output_res_path)
 	return true

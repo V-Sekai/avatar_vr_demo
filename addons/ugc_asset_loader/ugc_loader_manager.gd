@@ -219,9 +219,9 @@ class AssetLoadRequest:
 			return processor.output_resource
 		return self # Success, but no Resource in memory.
 
-	func perform_godot_resource_load(ugc: ugc_class, disk_tmp_path: String) -> Resource:
+	func perform_godot_resource_load(ugc: ugc_class) -> Resource:
 		state = State.STATE_LOADING
-		godot_resource_load_request = ugc.get_godot_resource_loader_manager().load(disk_cache_path)
+		godot_resource_load_request = ugc.get_godot_resource_loader_manager().load(disk_cache_path, validator)
 		var ret: Resource = await godot_resource_load_request.wait_for_completed()
 		if _cancelled:
 			return null
@@ -253,7 +253,7 @@ class AssetLoadRequest:
 		disk_tmp_path = ""
 
 	func save_tmp_to_cache(ugc: ugc_class):
-		ugc.get_cache_manager().save_tmp_file_to_cache(cache_key, disk_tmp_path)
+		print(ugc.get_cache_manager().save_tmp_file_to_cache(cache_key, disk_tmp_path))
 		# TODO: Do we need to delete disk_tmp_path?
 		disk_tmp_path = ""
 
@@ -291,9 +291,11 @@ func load_asset(alr: AssetLoadRequest) -> Node3D:
 		print("try dl " + alr.resolved_uri)
 		var success: bool = await alr.perform_download(self)
 		if not success:
+			print("failed download " + alr.resolved_uri)
 			return null # Failed.
 		var out_obj: Object = await alr.perform_processor(self)
 		if out_obj == null:
+			print("failed processor " + alr.resolved_uri)
 			return null # Failed.
 		if out_obj != alr:
 			skipped_validation_result_resource = out_obj as PackedScene
@@ -302,6 +304,9 @@ func load_asset(alr: AssetLoadRequest) -> Node3D:
 				alr.delete_tmp_from_cache(self, true)
 				return null # Failed.
 		alr.save_tmp_to_cache(self)
+
+	# Forces going through whitelisted functions.
+	skipped_validation_result_resource = null
 
 	# Note: It is possible for a malicious user with disk access to embed executable code into the cache.
 	if REVALIDATE_LOCAL_CACHE:
@@ -318,8 +323,7 @@ func load_asset(alr: AssetLoadRequest) -> Node3D:
 	if skipped_validation_result_resource != null:
 		ps = skipped_validation_result_resource
 	else:
-		alr.godot_resource_load_request = _godot_resource_loader_manager.load(alr.disk_cache_path)
-		ps = await alr.godot_resource_load_request.wait_for_completed() as PackedScene
+		ps = await alr.perform_godot_resource_load(self) as PackedScene
 	if alr._cancelled:
 		return null
 	if ps == null:
