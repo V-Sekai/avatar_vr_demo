@@ -1,0 +1,293 @@
+[gd_scene load_steps=13 format=3 uid="uid://dp8sv543nxu8m"]
+
+[ext_resource type="Script" uid="uid://cgqrqxc4fscyp" path="res://addons/multiverse_aligner/multiverse_root.gd" id="1_thga3"]
+[ext_resource type="PackedScene" uid="uid://cmv24r58d5x2d" path="res://multiscene/example_level.tscn" id="2_8ak2o"]
+[ext_resource type="Script" uid="uid://q5rhgc8bebfh" path="res://addons/canvas_plane/canvas_plane.gd" id="3_aoj0n"]
+[ext_resource type="Script" uid="uid://speak4d30mh3" path="res://addons/canvas_plane/canvas_3d_anchor.gd" id="4_ownjr"]
+[ext_resource type="Script" uid="uid://d4haj8uvda8n" path="res://addons/multiverse_aligner/multiverse_camera.gd" id="5_t6wku"]
+[ext_resource type="Script" uid="uid://cwbynhaqs5j5j" path="res://addons/interaction_system/interaction_manager.gd" id="6_khhnr"]
+
+[sub_resource type="GDScript" id="GDScript_ib35r"]
+script/source = "extends Button
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+
+
+func _on_focus_entered() -> void:
+	print(self.name + \" FOCUS ENTERED\")
+
+
+func _on_focus_exited() -> void:
+	print(self.name + \" FOCUS EXITED\")
+
+
+func _on_mouse_entered() -> void:
+	print(self.name + \" mouse ENTERED\")
+
+
+func _on_mouse_exited() -> void:
+	print(self.name + \" mouse EXITED\")
+
+
+func _on_pressed() -> void:
+	print(self.name + \" WAS PRESSED\")
+"
+
+[sub_resource type="GDScript" id="GDScript_007l1"]
+script/source = "extends Button
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+
+
+func _on_focus_entered() -> void:
+	print(self.name + \" FOCUS ENTERED\")
+
+
+func _on_focus_exited() -> void:
+	print(self.name + \" FOCUS EXITED\")
+
+
+func _on_mouse_entered() -> void:
+	print(self.name + \" mouse ENTERED\")
+
+
+func _on_mouse_exited() -> void:
+	print(self.name + \" mouse EXITED\")
+
+
+func _on_pressed() -> void:
+	print(self.name + \" WAS PRESSED\")
+"
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_5oqjj"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ysskf"]
+cull_mode = 2
+albedo_color = Color(0.694118, 0, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_a6amb"]
+material = SubResource("StandardMaterial3D_ysskf")
+radius = 0.001
+height = 0.002
+
+[sub_resource type="BoxMesh" id="BoxMesh_ij77i"]
+material = SubResource("StandardMaterial3D_ysskf")
+flip_faces = true
+size = Vector3(0.001, 0.001, 1)
+
+[node name="CanvasUI" type="Node3D"]
+script = ExtResource("1_thga3")
+is_primary = true
+
+[node name="Level (Primary)" parent="." instance=ExtResource("2_8ak2o")]
+
+[node name="Node3D" type="Node3D" parent="Level (Primary)"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.71204, 3.04192, -5.08679)
+script = ExtResource("3_aoj0n")
+canvas_anchor_x = 0.005319
+canvas_anchor_y = 0.031915
+canvas_width = 2096.0
+canvas_height = 1184.0
+canvas_scale = 0.01
+
+[node name="Label" type="Label" parent="Level (Primary)/Node3D"]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Hello, World
+"
+
+[node name="Button" type="Button" parent="Level (Primary)/Node3D"]
+offset_left = -1.0
+offset_top = 28.0
+offset_right = 121.0
+offset_bottom = 59.0
+action_mode = 0
+text = "COOL BUTTON
+"
+script = SubResource("GDScript_ib35r")
+
+[node name="Canvas3DAnchor" type="Node3D" parent="Level (Primary)/Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.244257, -0.0237228, 0)
+script = ExtResource("4_ownjr")
+canvas_item_node_path = NodePath("../Button")
+
+[node name="Node3D2" type="Node3D" parent="Level (Primary)"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.422416, 3.01521, -3.34866)
+script = ExtResource("3_aoj0n")
+canvas_anchor_x = 0.005319
+canvas_anchor_y = 0.031915
+canvas_width = 2096.0
+canvas_height = 1184.0
+canvas_scale = 0.01
+
+[node name="Label" type="Label" parent="Level (Primary)/Node3D2"]
+offset_right = 129.0
+offset_bottom = 23.0
+text = "NANNAANANAN"
+
+[node name="Button2" type="Button" parent="Level (Primary)/Node3D2"]
+offset_left = 2.0
+offset_top = 60.0
+offset_right = 192.0
+offset_bottom = 91.0
+action_mode = 0
+text = "SEJRTERRTJSERTSERJSEF"
+script = SubResource("GDScript_007l1")
+
+[node name="Button3" type="Button" parent="Level (Primary)/Node3D2"]
+offset_left = 177.0
+offset_top = 19.0
+offset_right = 367.0
+offset_bottom = 50.0
+action_mode = 0
+text = "Nearby button 1
+"
+script = SubResource("GDScript_007l1")
+
+[node name="Button4" type="Button" parent="Level (Primary)/Node3D2"]
+offset_left = 179.0
+offset_top = 107.0
+offset_right = 369.0
+offset_bottom = 138.0
+action_mode = 0
+text = "Nearby button 2
+
+"
+script = SubResource("GDScript_007l1")
+
+[node name="Button6" type="Button" parent="Level (Primary)/Node3D2"]
+offset_left = -153.0
+offset_top = 243.0
+offset_right = 37.0
+offset_bottom = 366.0
+action_mode = 0
+text = "OFF
+sssssssssssSCR
+REEEEEEEEEEEEEN
+BUT
+TON"
+alignment = 2
+script = SubResource("GDScript_007l1")
+
+[node name="Button5" type="Button" parent="Level (Primary)/Node3D2"]
+offset_left = -33.0
+offset_top = 105.0
+offset_right = 157.0
+offset_bottom = 159.0
+action_mode = 0
+text = "Nearby button 3"
+script = SubResource("GDScript_007l1")
+
+[node name="Label2" type="Label" parent="Level (Primary)/Node3D2"]
+offset_left = 2.0
+offset_top = 29.0
+offset_right = 111.0
+offset_bottom = 52.0
+text = "Aabaaaajajaja"
+
+[node name="ItemList" type="ItemList" parent="Level (Primary)/Node3D2"]
+offset_left = 64.0
+offset_top = 259.0
+offset_right = 218.0
+offset_bottom = 305.0
+item_count = 3
+item_0/text = "Item 1"
+item_1/text = "Item 2"
+item_2/text = "Item 3"
+
+[node name="LineEdit" type="LineEdit" parent="Level (Primary)/Node3D2"]
+offset_left = 249.0
+offset_top = 188.0
+offset_right = 388.0
+offset_bottom = 226.0
+placeholder_text = "Input box"
+
+[node name="HSlider" type="HSlider" parent="Level (Primary)/Node3D2"]
+offset_left = 266.0
+offset_top = 273.0
+offset_right = 472.0
+offset_bottom = 289.0
+
+[node name="Control" type="ColorRect" parent="Level (Primary)/Node3D2"]
+offset_left = 11.0
+offset_top = 189.0
+offset_right = 211.0
+offset_bottom = 229.0
+color = Color(0, 1, 1, 1)
+
+[node name="Canvas3DAnchor2" type="Node3D" parent="Level (Primary)/Node3D2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.499257, -0.851223, 0)
+script = ExtResource("4_ownjr")
+canvas_item_node_path = NodePath("../Control")
+
+[node name="Label3D" type="Label3D" parent="Level (Primary)/Node3D2/Canvas3DAnchor2"]
+text = "LABEL 3D"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Level (Primary)/Node3D2/Canvas3DAnchor2"]
+visible = false
+mesh = SubResource("CapsuleMesh_5oqjj")
+
+[node name="Camera3D" type="Camera3D" parent="Level (Primary)"]
+transform = Transform3D(0.994338, 0, -0.106264, 0, 1, 0, 0.106264, 0, 0.994338, -2.968, 3.155, -0.61)
+
+[node name="PlayerCamera" type="Node3D" parent="Level (Primary)/Camera3D"]
+script = ExtResource("5_t6wku")
+
+[node name="Node3D" type="Node3D" parent="."]
+script = ExtResource("6_khhnr")
+
+[node name="Cursor" type="MeshInstance3D" parent="Node3D"]
+mesh = SubResource("SphereMesh_a6amb")
+
+[node name="Ray" type="MeshInstance3D" parent="Node3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("BoxMesh_ij77i")
+
+[connection signal="focus_entered" from="Level (Primary)/Node3D/Button" to="Level (Primary)/Node3D/Button" method="_on_focus_entered"]
+[connection signal="focus_exited" from="Level (Primary)/Node3D/Button" to="Level (Primary)/Node3D/Button" method="_on_focus_exited"]
+[connection signal="mouse_entered" from="Level (Primary)/Node3D/Button" to="Level (Primary)/Node3D/Button" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Level (Primary)/Node3D/Button" to="Level (Primary)/Node3D/Button" method="_on_mouse_exited"]
+[connection signal="pressed" from="Level (Primary)/Node3D/Button" to="Level (Primary)/Node3D/Button" method="_on_pressed"]
+[connection signal="focus_entered" from="Level (Primary)/Node3D2/Button2" to="Level (Primary)/Node3D2/Button2" method="_on_focus_entered"]
+[connection signal="focus_exited" from="Level (Primary)/Node3D2/Button2" to="Level (Primary)/Node3D2/Button2" method="_on_focus_exited"]
+[connection signal="mouse_entered" from="Level (Primary)/Node3D2/Button2" to="Level (Primary)/Node3D2/Button2" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Level (Primary)/Node3D2/Button2" to="Level (Primary)/Node3D2/Button2" method="_on_mouse_exited"]
+[connection signal="pressed" from="Level (Primary)/Node3D2/Button2" to="Level (Primary)/Node3D2/Button2" method="_on_pressed"]
+[connection signal="focus_entered" from="Level (Primary)/Node3D2/Button3" to="Level (Primary)/Node3D2/Button3" method="_on_focus_entered"]
+[connection signal="focus_exited" from="Level (Primary)/Node3D2/Button3" to="Level (Primary)/Node3D2/Button3" method="_on_focus_exited"]
+[connection signal="mouse_entered" from="Level (Primary)/Node3D2/Button3" to="Level (Primary)/Node3D2/Button3" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Level (Primary)/Node3D2/Button3" to="Level (Primary)/Node3D2/Button3" method="_on_mouse_exited"]
+[connection signal="pressed" from="Level (Primary)/Node3D2/Button3" to="Level (Primary)/Node3D2/Button3" method="_on_pressed"]
+[connection signal="focus_entered" from="Level (Primary)/Node3D2/Button4" to="Level (Primary)/Node3D2/Button4" method="_on_focus_entered"]
+[connection signal="focus_exited" from="Level (Primary)/Node3D2/Button4" to="Level (Primary)/Node3D2/Button4" method="_on_focus_exited"]
+[connection signal="mouse_entered" from="Level (Primary)/Node3D2/Button4" to="Level (Primary)/Node3D2/Button4" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Level (Primary)/Node3D2/Button4" to="Level (Primary)/Node3D2/Button4" method="_on_mouse_exited"]
+[connection signal="pressed" from="Level (Primary)/Node3D2/Button4" to="Level (Primary)/Node3D2/Button4" method="_on_pressed"]
+[connection signal="focus_entered" from="Level (Primary)/Node3D2/Button6" to="Level (Primary)/Node3D2/Button6" method="_on_focus_entered"]
+[connection signal="focus_exited" from="Level (Primary)/Node3D2/Button6" to="Level (Primary)/Node3D2/Button6" method="_on_focus_exited"]
+[connection signal="mouse_entered" from="Level (Primary)/Node3D2/Button6" to="Level (Primary)/Node3D2/Button6" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Level (Primary)/Node3D2/Button6" to="Level (Primary)/Node3D2/Button6" method="_on_mouse_exited"]
+[connection signal="pressed" from="Level (Primary)/Node3D2/Button6" to="Level (Primary)/Node3D2/Button6" method="_on_pressed"]
+[connection signal="focus_entered" from="Level (Primary)/Node3D2/Button5" to="Level (Primary)/Node3D2/Button5" method="_on_focus_entered"]
+[connection signal="focus_exited" from="Level (Primary)/Node3D2/Button5" to="Level (Primary)/Node3D2/Button5" method="_on_focus_exited"]
+[connection signal="mouse_entered" from="Level (Primary)/Node3D2/Button5" to="Level (Primary)/Node3D2/Button5" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Level (Primary)/Node3D2/Button5" to="Level (Primary)/Node3D2/Button5" method="_on_mouse_exited"]
+[connection signal="pressed" from="Level (Primary)/Node3D2/Button5" to="Level (Primary)/Node3D2/Button5" method="_on_pressed"]
+
+[editable path="Level (Primary)"]
